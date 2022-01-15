@@ -1,0 +1,107 @@
+body {
+    font-family: Tahoma;
+    padding: 0px;
+    margin: 0px;
+}
+
+body, input {
+    font-size: 25px;
+}
+
+h3 {
+    background: #000088;
+    color: #ffffff;
+    margin: 0px;
+    padding: 5px;
+    font-size: 20px;
+}
+
+h3 label {
+    border-right: 1px dotted #ffffff;
+    padding-right: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+h3 label input {
+    width: 15px;
+    height: 15px;
+}
+
+h3 label:last-child{
+    border-right: none;
+}
+
+.tables
+{
+    float: right;
+}
+
+.sums {
+    text-align: center;
+}
+
+.sum {
+    border: 1px solid #cccccc;
+    display: block;
+    padding: 25px;
+    margin: 10px;
+    box-shadow: #888888 2px 2px 2px;
+}
+
+.sum input[readonly], .sum input[disabled] {
+    cursor: default;
+    border: 0px;
+    outline: 0px;
+    background: transparent;
+    overflow: show;
+}
+
+.sum input[readonly] {
+    color: inherit;
+    font-weight: normal;
+}
+
+.sum input{
+    font-weight: bolder;
+    color: #00ff00;
+    text-align: center;
+    width: 65px;
+}
+
+.correct-answer{
+    display: none;
+    padding: 5px;
+    border-top: 2px dashed #008800;
+    margin-top: 5px;
+}
+
+.incorrect .correct{
+    display: block;
+}
+
+.skipped input, .incorrect input{
+    color: #ff0000;
+}
+
+.skipped, .incorrect {
+    background-color: #880000;
+    color: #ffffff;
+}
+
+.correct {
+    background-color: #008800;
+}
+
+.sums .sum:first-child{
+    background-color: #cccccc;
+    padding: 25px;
+}
+
+.sums .sum:first-child input{
+    color: #000000;
+}
+
+.sums .sum:first-child .answer{
+    cursor: pointer;
+}

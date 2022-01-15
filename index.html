@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" type="text/css" href="timestables.css" />
+    </head>
+    <body>
+        <h3>
+            <span>Times Tables</span>
+            <div class="tables">
+            </div>
+        </h3>
+        <div class="sums">
+
+        </div>
+
+        <div id="templates" style="display: none;">
+            <div id="timestable">
+                <label>
+                    {number}
+                    <input type="checkbox" value="{number}" />
+                </label>
+            </div>
+
+            <div id="sum">
+                <div class="sum">
+                    <input type="number" maxlength="2" pattern="\d*" class="first" value="{first}" />
+                    <label>X</label>
+                    <input type="number" maxlength="2" pattern="\d*" class="second" value="{second}" />
+                    <label>=</label>
+                    <input type="number" maxlength="3" pattern="\d*" class="equals" value="{equals}" />
+                    <label class="answer">🤔</label>
+                    <div class="correct-answer"></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="timestables.js" charset="utf-8"></script>
+    </body>
+</html>
