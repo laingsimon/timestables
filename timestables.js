@@ -1,6 +1,11 @@
 $(document).ready(function(){
     var tables = null;
     var currentSum = null;
+    var results = {
+        correct: 0,
+        incorrect: 0,
+        skipped: 0
+    };
 
     function addTimesTableNumber(number, checked) {
         var template = $("#templates #timestable").html();
@@ -141,12 +146,15 @@ $(document).ready(function(){
         if (answer == currentSum.answer) {
             sum.addClass("correct");
             sum.find(".answer").html("👌");
+            results.correct++;
         } else {
             sum.addClass("incorrect");
             sum.find(".answer").html("👎");
             sum.find(".correct-answer").html("Correct answer is " + currentSum.answer);
+            results.incorrect++;
         }
 
+        updateTitle();
         addSum(getNextSum());
     }
 
@@ -181,6 +189,23 @@ $(document).ready(function(){
         }
     }
 
+    function updateTitle() {
+        var title = "Times tables";
+
+        if (results.correct) {
+            title += `, Correct: ${results.correct}`;
+        }
+        if (results.incorrect) {
+            title += `, Incorrect: ${results.incorrect}`;
+        }
+        if (results.skipped) {
+            title += `, Skipped: ${results.skipped}`;
+        }
+
+        document.title = title.trimEnd();
+        return;
+    }
+
     function showAnswer(){
         var answer = $(this);
         var sum = answer.closest(".sum");
@@ -198,6 +223,8 @@ $(document).ready(function(){
             }
         });
         
+        results.skipped++;
+        updateTitle();
         addSum(getNextSum());
     }
 
@@ -207,5 +234,6 @@ $(document).ready(function(){
 
     tables = loadTimesTables();
     addTimesTableNumbers();
+    updateTitle();
     replaceFirstSum();
 });
