@@ -1,6 +1,6 @@
 # timestables
 
-Simple easy to use and accessible 'app' for KS2 times table practice. Multiplication only at present until issue [#5](issues/5) is implemented.
+Simple easy to use and accessible 'app' for KS2 times table practice. Multiplication only at present until issue [#5](https://github.com/laingsimon/timestables/issues/5) is implemented.
 
 Open the the app from any phone or tablet via https://app.timestables.xyz.
 
