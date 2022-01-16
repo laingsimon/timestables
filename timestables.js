@@ -254,14 +254,45 @@ $(document).ready(function(){
         return Object.keys(tables);
     }
 
+    function shortenSelectedTables(selectedTables) {
+        var numberRange = null;
+
+        var numbers = [];
+        for (var index = 0; index < selectedTables.length; index++){
+            var currentNumber = Number.parseInt(selectedTables[index]);
+            if (numberRange && currentNumber == numberRange.to + 1) {
+                numberRange.to = currentNumber;
+                continue;
+            }
+            if (numberRange) {
+                numbers.push(numberRange);
+            }
+
+            numberRange = {
+                from: currentNumber,
+                to: currentNumber
+            };
+        }
+
+        numberRange.last = true;
+        numbers.push(numberRange);
+
+        return numbers;
+    }
+
     function updateTableChoserText() {
         var chosenTables = "";
 
-        getSelectedTables().forEach(function(number) {
+        shortenSelectedTables(getSelectedTables()).forEach(function(range) {
             if (chosenTables) {
-                chosenTables += ", ";
+                chosenTables += range.last ? " & " : ", ";
             }
-            chosenTables += `${number}`;
+
+            if (range.from == range.to) {
+                chosenTables += `${range.from}`;
+            } else {
+                chosenTables += `${range.from}...${range.to}`;
+            }
         });
 
         $(".chose-tables").html("Click to change: " + chosenTables);
