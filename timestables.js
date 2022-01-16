@@ -133,6 +133,11 @@ $(document).ready(function(){
         }
 
         var answer = $(this).val();
+
+        if (!answer) {
+            return;
+        }
+
         var sum = $(this).closest(".sum");
         var input = null;
         sum.find("input").each(function(){
