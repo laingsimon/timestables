@@ -153,6 +153,7 @@ $(document).ready(function(){
             sum.find(".correct-answer").html("Correct answer is " + currentSum.answer);
             results.incorrect++;
         }
+        sum.addClass("complete");
 
         updateTitle();
         addSum(getNextSum());
@@ -209,13 +210,15 @@ $(document).ready(function(){
     function showAnswer(){
         var answer = $(this);
         var sum = answer.closest(".sum");
-        if (sum.attr("disabled")){
+
+        if (sum.hasClass("complete")){
             return;
         }
 
         answer.html("⭕");
         var theAnswer = currentSum.answer;
         sum.addClass("skipped");
+        sum.addClass("complete");
         sum.find("input").each(function() {
             $(this).prop("disabled", true);
             if (!$(this).prop("readonly")) {
