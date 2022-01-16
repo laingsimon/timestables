@@ -153,6 +153,7 @@ $(document).ready(function(){
             sum.addClass("incorrect");
             sum.find(".answer").html("👎");
             sum.find(".correct-answer").html("Correct answer is " + currentSum.answer);
+            sum.find(".correct-answer").show();
             results.incorrect++;
         }
         sum.addClass("complete");
