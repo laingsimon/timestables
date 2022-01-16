@@ -6,6 +6,7 @@ $(document).ready(function(){
         incorrect: 0,
         skipped: 0
     };
+    var showCorrectAnswer = true;
 
     function addTimesTableNumber(number, checked) {
         var template = $("#templates #timestable").html();
@@ -19,10 +20,17 @@ $(document).ready(function(){
         return tables[number];
     }
 
-    function loadTimesTables() {
+    function loadSettings() {
+        var showCorrectAnswerOption = window.localStorage.getItem("showCorrectAnswer");
+        if (showCorrectAnswerOption === undefined) {
+            showCorrectAnswerOption = "true";
+        }
+        showCorrectAnswer = showCorrectAnswerOption === "true";
+
         var saved = window.localStorage.getItem("timestables");
         if (saved) {
-            return JSON.parse(saved);
+            tables = JSON.parse(saved);
+            return;
         }
 
         var defaultTimesTables = {};
@@ -30,10 +38,12 @@ $(document).ready(function(){
             defaultTimesTables[i] = true;
         }
 
-        return defaultTimesTables;
+        tables = defaultTimesTables;
+        return;
     }
 
-    function saveTimesTables() {
+    function saveSettings() {
+        window.localStorage.setItem("showCorrectAnswer", showCorrectAnswer);
         window.localStorage.setItem("timestables", JSON.stringify(tables));
     }
 
@@ -153,7 +163,9 @@ $(document).ready(function(){
             sum.addClass("incorrect");
             sum.find(".answer").html("👎");
             sum.find(".correct-answer").html("Correct answer is " + currentSum.answer);
-            sum.find(".correct-answer").show();
+            if (showCorrectAnswer) {
+                sum.find(".correct-answer").show();
+            }
             results.incorrect++;
         }
         sum.addClass("complete");
@@ -243,10 +255,12 @@ $(document).ready(function(){
             }
 
             tables.hide();
-            saveTimesTables();
+            showCorrectAnswer = $(".show-correct-answer input").prop("checked");
+            saveSettings();
             updateTableChoserText();
             replaceFirstSum();
         } else {
+            $(".show-correct-answer input").prop("checked", showCorrectAnswer);
             tables.show();
         }
     }
@@ -301,11 +315,11 @@ $(document).ready(function(){
 
     $(".chose-tables").click(toggleTableChooser);
     $(".toggle-choser").click(toggleTableChooser);
-    $(".tables").on("click", "input", updateTableOption)
+    $(".tables .numbers").on("click", "input", updateTableOption)
     $(".sums").on("keypress", "input", processAnswer);
     $(".sums").on("click", ".answer", showAnswer);
 
-    tables = loadTimesTables();
+    loadSettings();
     updateTableChoserText();
     addTimesTableNumbers();
     updateTitle();
