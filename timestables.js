@@ -11,7 +11,7 @@ $(document).ready(function(){
         var template = $("#templates #timestable").html();
         template = template.replace(/{number}/g, number);
 
-        $(".tables").append($(template));
+        $(".tables .numbers").append($(template));
         $(`.tables input[value='${number}']`).prop("checked", checked);
     }
 
@@ -50,9 +50,6 @@ $(document).ready(function(){
         } else {
             delete tables[number];
         }
-
-        saveTimesTables();
-        replaceFirstSum();
     }
 
     function addSum(sum){
@@ -236,12 +233,50 @@ $(document).ready(function(){
         addSum(getNextSum());
     }
 
+    function toggleTableChooser() {
+        var tables = $(".tables");
+        if (tables.is(":visible")) {
+            if (!getSelectedTables().length) {
+                alert("You must select at least one number");
+                return;
+            }
+
+            tables.hide();
+            saveTimesTables();
+            updateTableChoserText();
+            replaceFirstSum();
+        } else {
+            tables.show();
+        }
+    }
+
+    function getSelectedTables() {
+        return Object.keys(tables);
+    }
+
+    function updateTableChoserText() {
+        var chosenTables = "";
+
+        getSelectedTables().forEach(function(number) {
+            if (chosenTables) {
+                chosenTables += ", ";
+            }
+            chosenTables += `${number}`;
+        });
+
+        $(".chose-tables").html("Click to change: " + chosenTables);
+    }
+
+    $(".chose-tables").click(toggleTableChooser);
+    $(".toggle-choser").click(toggleTableChooser);
     $(".tables").on("click", "input", updateTableOption)
     $(".sums").on("keypress", "input", processAnswer);
     $(".sums").on("click", ".answer", showAnswer);
 
     tables = loadTimesTables();
+    updateTableChoserText();
     addTimesTableNumbers();
     updateTitle();
-    replaceFirstSum();
+    
+    toggleTableChooser();
 });
