@@ -208,7 +208,7 @@ $(document).ready(function(){
             title += `, Skipped: ${results.skipped}`;
         }
 
-        document.title = title.trimEnd();
+        $(".title").html(title);
         return;
     }
 
