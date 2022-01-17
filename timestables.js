@@ -132,7 +132,7 @@ class Sums{
         if (this.currentSum != null) {
             var firstExistingSum = $(".sums .sum")[0];
             $(firstExistingSum).remove();
-            currentSum = null;
+            this.currentSum = null;
         }
 
         this.nextSum();

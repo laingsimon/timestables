@@ -9,7 +9,7 @@ body, input {
 }
 
 h3 {
-    background: #000088;
+    background: linear-gradient(#aaaaff, #000088);
     color: #ffffff;
     margin: 0px;
     padding: 5px;
@@ -17,10 +17,12 @@ h3 {
 }
 
 .choser-title {
-    background: #000088;
+    background: linear-gradient(#aaaaff, #000088);
     color: #ffffff;
     display: block;
     padding: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }
 
 h3 label {
@@ -68,7 +70,7 @@ h3 label input {
     left: 25%;
     width: 50%;
     box-shadow: #888888 5px 5px 5px;
-    border: 1px solid #888888;
+    border-radius: 5px;
     text-align: center;
 }
 
