@@ -1,69 +1,68 @@
-$(document).ready(function(){
-    var tables = null;
-    var currentSum = null;
-    var results = {
-        correct: 0,
-        incorrect: 0,
-        skipped: 0
-    };
-    var showCorrectAnswer = true;
-
-    function addTimesTableNumber(number, checked) {
-        var template = $("#templates #timestable").html();
-        template = template.replace(/{number}/g, number);
-
-        $(".tables .numbers").append($(template));
-        $(`.tables input[value='${number}']`).prop("checked", checked);
+class Settings {
+    constructor(){
+        this.reload();
     }
 
-    function shouldBeChecked(number) {
-        return tables[number];
+    save(){
+        window.localStorage.setItem("settings", JSON.stringify(this.settings));
     }
 
-    function loadSettings() {
-        var showCorrectAnswerOption = window.localStorage.getItem("showCorrectAnswer");
-        if (showCorrectAnswerOption === undefined) {
-            showCorrectAnswerOption = "true";
+    reload(){
+        var json = window.localStorage.getItem("settings");
+        this.settings = json ? JSON.parse(json) : this.getDefaultSettings();
+    }
+
+    getDefaultSettings(){
+        return {
+            timesTables: {
+                2: true, 3: true, 4: true, 5: true,
+                6: true, 7: true, 8: true, 9: true,
+                10: true, 11: true, 12: true
+            },
+            showCorrectAnswer: true
+        };
+    }
+
+    get timesTables(){
+        return this.settings.timesTables;
+    }
+
+    get showCorrectAnswer(){
+        return this.settings.showCorrectAnswer;
+    }
+
+    set showCorrectAnswer(value) {
+        this.settings.showCorrectAnswer = value;
+    }
+}
+
+class Random {
+    between(min, max, filter) {
+        var iteration = 0;
+
+        while (iteration < 100) {
+            iteration++;
+            var number = Math.floor(Math.random() * (max - min + 1) + min);
+
+            if (!filter) {
+                return number;
+            }
+
+            if (filter[number]) {
+                return number;
+            }
         }
-        showCorrectAnswer = showCorrectAnswerOption === "true";
 
-        var saved = window.localStorage.getItem("timestables");
-        if (saved) {
-            tables = JSON.parse(saved);
-            return;
-        }
+        throw new Error(`Unable to get a random number between ${min} and ${max}`);
+    }
+}
 
-        var defaultTimesTables = {};
-        for (var i = 2; i <= 12; i++){
-            defaultTimesTables[i] = true;
-        }
-
-        tables = defaultTimesTables;
-        return;
+class Templates {
+    constructor(settings) {
+        this.settings = settings;
     }
 
-    function saveSettings() {
-        window.localStorage.setItem("showCorrectAnswer", showCorrectAnswer);
-        window.localStorage.setItem("timestables", JSON.stringify(tables));
-    }
-
-    function addTimesTableNumbers() {
-        for (var number = 2; number <= 12; number++) {
-            addTimesTableNumber(number, shouldBeChecked(number));
-        }
-    }
-
-    function updateTableOption() {
-        var number = $(this).val();
-        if ($(this).prop("checked")){
-            tables[number] = true;
-        } else {
-            delete tables[number];
-        }
-    }
-
-    function addSum(sum){
-        currentSum = sum;
+    addSum(sum){
         var template = $("#templates #sum").html();
         template = template.replace(/{first}/g, sum.first || "");
         template = template.replace(/{second}/g, sum.second || "");
@@ -94,91 +93,56 @@ $(document).ready(function(){
         });
     }
 
-    function replaceFirstSum() {
-        if (currentSum == null) {
-            addSum(getNextSum());
-            return;
-        }
+    addTimesTableNumber(number, checked) {
+        var template = $("#templates #timestable").html();
+        template = template.replace(/{number}/g, number);
 
-        var firstExistingSum = $(".sums .sum")[0];
-        $(firstExistingSum).remove();
-        currentSum = null;
-        addSum(getNextSum());
+        $(".tables .numbers").append($(template));
+        $(`.tables input[value='${number}']`).prop("checked", checked);
     }
 
-    function getRandomMode() {
-        var mode = getRandomNumber(1, 3, null);
-        switch (mode){
-            case 1: return "?xn=n";
-            case 2: return "nx?=n";
-            case 3: return "nxn=?";
+    addTimesTableNumbers() {
+        for (var number = 2; number <= 12; number++) {
+            var shouldBeChecked = this.settings.timesTables[number] || false;
+            this.addTimesTableNumber(number, shouldBeChecked);
         }
     }
+}
 
-    function getRandomNumber(min, max, filter) {
-        var iteration = 0;
+class Sums{
+    constructor(settings, templates, title, results){
+        this.settings = settings;
+        this.currentSum = null;
+        this.templates = templates;
+        this.random = new Random();
+        this.title = title;
+        this.results = results;
 
-        while (iteration < 100) {
-            iteration++;
-            var number = Math.floor(Math.random() * (max - min + 1) + min);
-
-            if (!filter) {
-                return number;
-            }
-
-            if (filter[number]) {
-                return number;
-            }
-        }
-
-        throw new Error(`Unable to get a random number between ${min} and ${max}`);
+        $(".sums").on("keypress", "input", this.processAnswer.bind(this));
+        $(".sums").on("click", ".answer", this.showAnswer.bind(this));
     }
 
-    function processAnswer(event) {
-        if (event.keyCode !== 13) {
-            return;
-        }
-
-        var answer = $(this).val();
-
-        if (!answer) {
-            return;
-        }
-
-        var sum = $(this).closest(".sum");
-        var input = null;
-        sum.find("input").each(function(){
-            $(this).prop("disabled", true);
-
-            if (!$(this).prop("readonly")) {
-                input = $(this);
-            }
-        });
-
-        if (answer == currentSum.answer) {
-            sum.addClass("correct");
-            sum.find(".answer").html("👌");
-            results.correct++;
-        } else {
-            sum.addClass("incorrect");
-            sum.find(".answer").html("👎");
-            sum.find(".correct-answer").html("Correct answer is " + currentSum.answer);
-            if (showCorrectAnswer) {
-                sum.find(".correct-answer").show();
-            }
-            results.incorrect++;
-        }
-        sum.addClass("complete");
-
-        updateTitle();
-        addSum(getNextSum());
+    nextSum(){
+        var sum = this.getNextSum();
+        this.currentSum = sum;
+        this.templates.addSum(sum);
     }
 
-    function getNextSum() {
-        var mode = getRandomMode();
-        var filterOption = getRandomNumber(1, 2);
-        var first = getRandomNumber(2, 12, filterOption == 1 ? tables : null);
-        var second = getRandomNumber(2, 12, filterOption == 2 ? tables : null);
+    replaceFirstSum() {
+        if (this.currentSum != null) {
+            var firstExistingSum = $(".sums .sum")[0];
+            $(firstExistingSum).remove();
+            currentSum = null;
+        }
+
+        this.nextSum();
+    }
+
+    getNextSum() {
+        var mode = this.getRandomMode();
+        var filterOption = this.random.between(1, 2);
+        var first = this.random.between(2, 12, filterOption == 1 ? this.settings.timesTables : null);
+        var second = this.random.between(2, 12, filterOption == 2 ? this.settings.timesTables : null);
 
         switch (mode) {
             case "?xn=n":
@@ -205,25 +169,54 @@ $(document).ready(function(){
         }
     }
 
-    function updateTitle() {
-        var title = "Times tables";
-
-        if (results.correct) {
-            title += `, Correct: ${results.correct}`;
+    getRandomMode() {
+        var mode = this.random.between(1, 3, null);
+        switch (mode){
+            case 1: return "?xn=n";
+            case 2: return "nx?=n";
+            case 3: return "nxn=?";
         }
-        if (results.incorrect) {
-            title += `, Incorrect: ${results.incorrect}`;
-        }
-        if (results.skipped) {
-            title += `, Skipped: ${results.skipped}`;
-        }
-
-        $(".title").html(title);
-        return;
     }
 
-    function showAnswer(){
-        var answer = $(this);
+    processAnswer(event) {
+        if (event.keyCode !== 13) {
+            return;
+        }
+
+        var eventTarget = event.currentTarget;
+        var answer = $(eventTarget).val();
+
+        if (!answer) {
+            return;
+        }
+
+        var sum = $(eventTarget).closest(".sum");
+        sum.find("input").each(function(){
+            $(eventTarget).prop("disabled", true);
+        });
+
+        if (answer == this.currentSum.answer) {
+            sum.addClass("correct");
+            sum.find(".answer").html("👌");
+            this.results.correct++;
+        } else {
+            sum.addClass("incorrect");
+            sum.find(".answer").html("👎");
+            sum.find(".correct-answer").html("Correct answer is " + this.currentSum.answer);
+            if (this.settings.showCorrectAnswer) {
+                sum.find(".correct-answer").show();
+            }
+            this.results.incorrect++;
+        }
+        sum.addClass("complete");
+
+        this.title.update();
+        this.nextSum();
+    }
+
+    showAnswer(event){
+        var eventTarget = event.currentTarget;
+        var answer = $(eventTarget);
         var sum = answer.closest(".sum");
 
         if (sum.hasClass("complete")){
@@ -231,7 +224,7 @@ $(document).ready(function(){
         }
 
         answer.html("⭕");
-        var theAnswer = currentSum.answer;
+        var theAnswer = this.currentSum.answer;
         sum.addClass("skipped");
         sum.addClass("complete");
         sum.find("input").each(function() {
@@ -240,36 +233,129 @@ $(document).ready(function(){
                 $(this).val(theAnswer);
             }
         });
-        
-        results.skipped++;
-        updateTitle();
-        addSum(getNextSum());
+
+        this.results.skipped++;
+        this.title.update();
+        this.nextSum();
+    }
+}
+
+class Title {
+    constructor(results){
+        this.results = results;
     }
 
-    function toggleTableChooser() {
-        var tables = $(".tables");
-        if (tables.is(":visible")) {
-            if (!getSelectedTables().length) {
-                alert("You must select at least one number");
-                return;
-            }
+    update() {
+        var title = "Times tables";
 
-            tables.hide();
-            showCorrectAnswer = $(".show-correct-answer input").prop("checked");
-            saveSettings();
-            updateTableChoserText();
-            replaceFirstSum();
-        } else {
-            $(".show-correct-answer input").prop("checked", showCorrectAnswer);
-            tables.show();
+        if (this.results.correct) {
+            title += `, Correct: ${this.results.correct}`;
+        }
+        if (this.results.incorrect) {
+            title += `, Incorrect: ${this.results.incorrect}`;
+        }
+        if (this.results.skipped) {
+            title += `, Skipped: ${this.results.skipped}`;
+        }
+
+        $(".title").html(title);
+        return;
+    }
+}
+
+class Results {
+    constructor(){
+        this.totals = {
+            correct: 0,
+            incorrect: 0,
+            skipped: 0
         }
     }
 
-    function getSelectedTables() {
-        return Object.keys(tables);
+    get correct(){
+        return this.totals.correct;
+    }
+    set correct(value) {
+        this.totals.correct = value;
     }
 
-    function shortenSelectedTables(selectedTables) {
+    get incorrect(){
+        return this.totals.incorrect;
+    }
+    set incorrect(value) {
+        this.totals.incorrect = value;
+    }
+
+    get skipped(){
+        return this.totals.skipped;
+    }
+    set skipped(value) {
+        this.totals.skipped = value;
+    }
+}
+
+class OptionsDialog {
+    constructor(settings, sums) {
+        this.settings = settings;
+        this.sums = sums;
+
+        $(".tables .numbers").on("click", "input", this.updateTableOption.bind(this))
+        $(".chose-tables").click(this.toggleTableChooser.bind(this));
+        $(".toggle-choser").click(this.toggleTableChooser.bind(this));
+    }
+
+    updateTableOption(event) {
+        var currentTarget = event.currentTarget;
+
+        var number = $(currentTarget).val();
+        if ($(this).prop("checked")){
+            this.settings.timesTables[number] = true;
+        } else {
+            delete this.settings.timesTables[number];
+        }
+    }
+
+    toggleTableChooser(show) {
+        var tables = $(".tables");
+
+        if (show === true || !tables.is(":visible")) {
+            $(".show-correct-answer input").prop("checked", this.settings.showCorrectAnswer);
+            tables.show();
+            return;
+        }
+
+        if (!Object.keys(this.settings.timesTables).length) {
+            alert("You must select at least one number");
+            return;
+        }
+
+        tables.hide();
+        this.settings.showCorrectAnswer = $(".show-correct-answer input").prop("checked");
+        this.settings.save();
+        this.updateTableChoserText();
+        this.sums.replaceFirstSum();
+    }
+
+    updateTableChoserText() {
+        var chosenTables = "";
+
+        var selectedTimesTables = Object.keys(this.settings.timesTables);
+        this.shortenSelectedTables(selectedTimesTables).forEach(function(range) {
+            if (chosenTables) {
+                chosenTables += range.last ? " & " : ", ";
+            }
+
+            if (range.from == range.to) {
+                chosenTables += `${range.from}`;
+            } else {
+                chosenTables += `${range.from}...${range.to}`;
+            }
+        });
+
+        $(".chose-tables").html("Click to change: " + chosenTables);
+    }
+
+    shortenSelectedTables(selectedTables) {
         var numberRange = null;
 
         var numbers = [];
@@ -289,40 +375,26 @@ $(document).ready(function(){
             };
         }
 
-        numberRange.last = true;
-        numbers.push(numberRange);
+        if (numberRange) {
+            numberRange.last = true;
+            numbers.push(numberRange);
+        }
 
         return numbers;
     }
+}
 
-    function updateTableChoserText() {
-        var chosenTables = "";
+$(document).ready(function(){
+    var settings = new Settings();
+    var results = new Results();
+    var title = new Title(results);
+    var templates = new Templates(settings);
+    var sums = new Sums(settings, templates, title, results);
+    var options = new OptionsDialog(settings, sums);
 
-        shortenSelectedTables(getSelectedTables()).forEach(function(range) {
-            if (chosenTables) {
-                chosenTables += range.last ? " & " : ", ";
-            }
+    options.updateTableChoserText();
+    templates.addTimesTableNumbers();
+    title.update();
 
-            if (range.from == range.to) {
-                chosenTables += `${range.from}`;
-            } else {
-                chosenTables += `${range.from}...${range.to}`;
-            }
-        });
-
-        $(".chose-tables").html("Click to change: " + chosenTables);
-    }
-
-    $(".chose-tables").click(toggleTableChooser);
-    $(".toggle-choser").click(toggleTableChooser);
-    $(".tables .numbers").on("click", "input", updateTableOption)
-    $(".sums").on("keypress", "input", processAnswer);
-    $(".sums").on("click", ".answer", showAnswer);
-
-    loadSettings();
-    updateTableChoserText();
-    addTimesTableNumbers();
-    updateTitle();
-    
-    toggleTableChooser();
+    options.toggleTableChooser(true);
 });
