@@ -148,3 +148,14 @@ h3 label input {
 .sums .sum:first-child .answer{
     cursor: pointer;
 }
+
+.copyright-footer {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    font-size: 10px;
+    padding: 2px;
+    background: #cccccc;
+    opacity: 0.5;
+}
