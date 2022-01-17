@@ -197,11 +197,11 @@ class Sums{
 
         if (answer == this.currentSum.answer) {
             sum.addClass("correct");
-            sum.find(".answer").html("👌");
+            sum.find(".answer").html(this.getRandomCorrectSymbol());
             this.results.correct++;
         } else {
             sum.addClass("incorrect");
-            sum.find(".answer").html("👎");
+            sum.find(".answer").html(this.getRandomIncorrectSymbol());
             sum.find(".correct-answer").html("Correct answer is " + this.currentSum.answer);
             if (this.settings.showCorrectAnswer) {
                 sum.find(".correct-answer").show();
@@ -214,6 +214,18 @@ class Sums{
         this.nextSum();
     }
 
+    getRandomCorrectSymbol(){
+        var codes = [ '&#x1f603;', '&#x1f607;', '&#x1f609;', '&#x1f60d;' ];
+        var random = this.random.between(0, codes.length - 1);
+        return codes[random];
+    }
+
+    getRandomIncorrectSymbol() {
+        var codes = [ '&#x1f615;', '&#x1f612;', '&#x1f61f;' ];
+        var random = this.random.between(0, codes.length - 1);
+        return codes[random];
+    }
+
     showAnswer(event){
         var eventTarget = event.currentTarget;
         var answer = $(eventTarget);
@@ -223,7 +235,8 @@ class Sums{
             return;
         }
 
-        answer.html("⭕");
+        answer.html("");
+        answer.removeClass("dont-know");
         var theAnswer = this.currentSum.answer;
         sum.addClass("skipped");
         sum.addClass("complete");

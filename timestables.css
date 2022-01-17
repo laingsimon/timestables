@@ -77,11 +77,11 @@ h3 label input {
 }
 
 .sum {
-    border: 1px solid #cccccc;
     display: block;
     padding: 25px;
     margin: 10px;
-    box-shadow: #888888 2px 2px 2px;
+    box-shadow: #888888 2px 2px 5px;
+    border-radius: 10px;
 }
 
 .sum input[readonly], .sum input[disabled] {
@@ -102,12 +102,21 @@ h3 label input {
     color: #00ff00;
     text-align: center;
     width: 65px;
+    border-radius: 5px;
+    border-width: 0px;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.sum input::-webkit-outer-spin-button,
+.sum input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .correct-answer{
     display: none;
     padding: 5px;
-    border-top: 2px dashed #008800;
+    border-top: 2px dashed #ff0000;
     margin-top: 5px;
 }
 
@@ -120,12 +129,11 @@ h3 label input {
 }
 
 .skipped, .incorrect {
-    background-color: #880000;
-    color: #ffffff;
+    background-color: #ff8888;
 }
 
 .correct {
-    background-color: #008800;
+    background-color: #21c021;
 }
 
 .sums .sum:first-child{
