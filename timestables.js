@@ -337,7 +337,7 @@ class OptionsDialog {
         var currentTarget = event.currentTarget;
 
         var number = $(currentTarget).val();
-        if ($(this).prop("checked")){
+        if ($(currentTarget).prop("checked")){
             this.settings.timesTables[number] = true;
         } else {
             delete this.settings.timesTables[number];
