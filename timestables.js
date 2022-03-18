@@ -258,32 +258,30 @@ class Title {
         this.results = results;
     }
 
-    toggleFullScreen() {
-        var doc = window.document;
-        var docEl = doc.documentElement;
-
-        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
-        if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-            requestFullScreen.call(docEl);
-        }
-        else {
-            cancelFullScreen.call(doc);
-        }
-    }
-
     update() {
-        var title = "Times tables";
+        var title = "";
 
         if (this.results.correct) {
-            title += `, Correct: ${this.results.correct}`;
+            if (title !== "") {
+                title += ", "
+            }
+            title += `Correct: ${this.results.correct}`;
         }
         if (this.results.incorrect) {
-            title += `, Incorrect: ${this.results.incorrect}`;
+            if (title !== "") {
+                title += ", "
+            }
+            title += `Incorrect: ${this.results.incorrect}`;
         }
         if (this.results.skipped) {
-            title += `, Skipped: ${this.results.skipped}`;
+            if (title !== "") {
+                title += ", "
+            }
+            title += `Skipped: ${this.results.skipped}`;
+        }
+
+        if (title === "") {
+            title = "Times tables";
         }
 
         $(".title").html(title);
@@ -333,6 +331,23 @@ class OptionsDialog {
         $(".toggle-choser").click(this.toggleTableChooser.bind(this));
     }
 
+    enterFullScreen() {
+        var doc = window.document;
+        var docEl = doc.documentElement;
+
+        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+
+        requestFullScreen.call(docEl);
+    }
+
+    exitFullScreen() {
+        var doc = window.document;
+
+        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+        cancelFullScreen.call(doc);
+    }
+
     updateTableOption(event) {
         var currentTarget = event.currentTarget;
 
@@ -363,6 +378,7 @@ class OptionsDialog {
         this.settings.save();
         this.updateTableChoserText();
         this.sums.replaceFirstSum();
+        this.enterFullScreen();
     }
 
     updateTableChoserText() {
