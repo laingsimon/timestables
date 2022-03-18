@@ -14,6 +14,7 @@ h3 {
     margin: 0px;
     padding: 5px;
     font-size: 20px;
+    z-index: 1;
 }
 
 .choser-title {
@@ -50,10 +51,9 @@ h3 label input {
 {
     position: absolute;
     top: 0px;
-    bottom: 0px;
+    bottom: 15px; /* for the copyright footer */
     right: 0px;
     left: 0px;
-    background: #cccccc;
 }
 
 .toggle-choser {
@@ -72,10 +72,13 @@ h3 label input {
     box-shadow: #888888 5px 5px 5px;
     border-radius: 5px;
     text-align: center;
+    background: #cccccc;
+    z-index: 1;
 }
 
 .sums {
     text-align: center;
+    z-index: 1;
 }
 
 .sum {
@@ -160,4 +163,36 @@ h3 label input {
     padding: 2px;
     background: #cccccc;
     opacity: 0.5;
+    z-index: 1;
+}
+
+.background {
+    background: #cccccc;
+    color: #d0d0d0;
+    font-size: 70px;
+    white-space: pre;
+    width: 130%;
+    height: 130%;
+    transform: rotate(10deg);
+    overflow: clip;
+    margin-top: -100px;
+    margin-left: -100px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: normal;
+}
+
+.background-container {
+    position: fixed;
+    overflow: visible;
+    z-index: 1;
+}
+
+.content {
+    z-index: 2;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 15px; /* for the copyright footer */
+    overflow: auto;
 }

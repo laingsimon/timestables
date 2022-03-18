@@ -110,11 +110,11 @@ class Templates {
 }
 
 class Sums{
-    constructor(settings, templates, title, results){
+    constructor(settings, templates, title, results, random){
         this.settings = settings;
         this.currentSum = null;
         this.templates = templates;
-        this.random = new Random();
+        this.random = random;
         this.title = title;
         this.results = results;
 
@@ -285,7 +285,6 @@ class Title {
         }
 
         $(".title").html(title);
-        $(".title").click(this.toggleFullScreen);
         return;
     }
 }
@@ -361,10 +360,14 @@ class OptionsDialog {
 
     toggleTableChooser(show) {
         var tables = $(".tables");
+        var sums = $(".sums");
+        var choseTables = $(".chose-tables");
 
         if (show === true || !tables.is(":visible")) {
             $(".show-correct-answer input").prop("checked", this.settings.showCorrectAnswer);
             tables.show();
+            sums.hide();
+            choseTables.hide();
             return;
         }
 
@@ -373,6 +376,8 @@ class OptionsDialog {
             return;
         }
 
+        choseTables.show();
+        sums.show();
         tables.hide();
         this.settings.showCorrectAnswer = $(".show-correct-answer input").prop("checked");
         this.settings.save();
@@ -429,17 +434,83 @@ class OptionsDialog {
     }
 }
 
+class Background {
+    constructor(random) {
+        this.interval = null;
+        this.random = random;
+    }
+
+    start(delay) {
+        this.delay = delay || this.delay;
+        let handler = this.updateBackgrounds.bind(this);
+        
+        this.stop();
+        this.interval = window.setInterval(handler, delay);
+        handler();
+    }
+
+    stop() {
+        if (this.interval) {
+            window.clearInterval(this.interval);
+        }
+    }
+
+    updateBackgrounds() {
+        let updateBackground = this.updateBackground.bind(this);
+
+        $(".background").each(function() {
+            var element = $(this);
+            updateBackground(element);
+        });
+    }
+
+    updateBackground(element) {
+        let content = this.getContent(20, 15);
+        element.html(content);
+    }
+
+    getContent(width, height) {
+        let content = "";
+        
+        for (let line = 0; line < height; line++) {
+            content += this.getLine(width) + "\n";
+        }
+
+        return content;
+    }
+
+    getLine(width) {
+        let selection = [ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "x", "=" ];
+        let content = "";
+
+        for (let index = 0; index < width; index++) {
+            let selectionIndex = this.random.between(0, selection.length - 1);
+            let character = selection[selectionIndex];
+            if (content !== "") {
+                content += " ";
+            }
+
+            content += character;
+        }
+
+        return content;
+    }
+}
+
 $(document).ready(function(){
+    var random = new Random();
     var settings = new Settings();
     var results = new Results();
     var title = new Title(results);
     var templates = new Templates(settings);
-    var sums = new Sums(settings, templates, title, results);
+    var sums = new Sums(settings, templates, title, results, random);
     var options = new OptionsDialog(settings, sums);
+    var background = new Background(random);
 
     options.updateTableChoserText();
     templates.addTimesTableNumbers();
     title.update();
+    background.start(1000);
 
     options.toggleTableChooser(true);
 });
