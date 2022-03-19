@@ -19,12 +19,12 @@ If anyone else benefits from it, great. But I'm not going to charge anyone for t
 
 This naturally means that I need to make sure it doesn't cost me anything material. If that continues to be the case then I'll keep the service alive. However I'll have to review it if it is abused.
 
-The product is licensed under the Apache 2. There should be no copying of this software for redistribution and certainly not any monetary gain. If you've been charged or presented with ads, you've come across an unlicensed copy.l, and nothing of my doing.
+The product is licensed under the Apache 2. There should be no copying of this software for redistribution and certainly not any monetary gain. If you've been charged or presented with ads, you've come across an unlicensed copy, and nothing of my doing.
 
 ### Light weight, and survive the test of time
-I want this service to support people now. Next year next decade if anyone sees the use for it. I've made an assumption that the technology of the future will not look too different from what we have today, i.e. handheld tech will still be a thing and that tech will support a web page.
+I want this service to support people now. Next year, next decade, if anyone sees the use for it. I've made an assumption that the technology of the future will not look too different from what we have today, i.e. handheld tech will still be a thing and that tech will support a web page.
 
-That's it. If you can [open a web page](https://app.timestables.xyz), you can use the app. No installation required. No high end device requirements and no space requirements. As such, there can be one version to work in iOS, android, windows and anywhere else you can think of.
+That's it. If you can [open a web page](https://app.timestables.xyz), you can use the app. No installation required. No high end device requirements and no space requirements. As such, there can be one version to work in iOS, Android, Windows and anywhere else you can think of.
 
 ### Safe and secure for use by young children
 Finally. But probably the most important. Children will be in front of the service, as such everything must be secure, safe and appropriate. No personal data should be requested, stored on the browser and certainly not transmitted over the internet.
@@ -32,7 +32,7 @@ Finally. But probably the most important. Children will be in front of the servi
 The service should be entirely client-only, there should be no server component to support this verification.
 
 ## Implementation
-I thought about the means of implementing this service and considered that it could be a showcase of my capabilities, using react or some other 'clever' technologies. It could have made things simpler, but equally would have complicated matters.
+I thought about the means of implementing this service and considered that it could be a showcase of my capabilities, using React or some other 'clever' technologies. It could have made things simpler, but equally would have complicated matters.
 
 Ultimately I want a service that is easy to create and maintain. Also, only requiring client side capabilities. Compiling less or sass to CSS - for example - only complicates the development and release process.
 
