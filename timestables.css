@@ -166,33 +166,10 @@ h3 label input {
     z-index: 1;
 }
 
+.background-grey {
+    background-color: #cccccc;
+}
+
 .background {
-    background: #cccccc;
-    color: #d0d0d0;
-    font-size: 70px;
-    white-space: pre;
-    width: 130%;
-    height: 130%;
-    transform: rotate(10deg);
-    overflow: clip;
-    margin-top: -100px;
-    margin-left: -100px;
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: normal;
-}
-
-.background-container {
-    position: fixed;
-    overflow: visible;
-    z-index: 1;
-}
-
-.content {
-    z-index: 2;
-    position: fixed;
-    left: 0px;
-    top: 0px;
-    right: 0px;
-    bottom: 15px; /* for the copyright footer */
-    overflow: auto;
+    background-position: center center;
 }

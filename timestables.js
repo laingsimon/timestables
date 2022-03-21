@@ -443,7 +443,7 @@ class Background {
     start(delay) {
         this.delay = delay || this.delay;
         let handler = this.updateBackgrounds.bind(this);
-        
+
         this.stop();
         this.interval = window.setInterval(handler, delay);
         handler();
@@ -465,22 +465,46 @@ class Background {
     }
 
     updateBackground(element) {
-        let content = this.getContent(20, 15);
-        element.html(content);
+        let width = 600;
+        let height = 300;
+        let content = this.getContent(width, height);
+
+        let charWidth = 12;
+        let lineHeight = 24;
+
+        let svg = `<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='${height * lineHeight}px' width='${((width * 2) - 1) * charWidth}px'>
+                     <style>
+                       div {
+                         color: #ffffff;
+                         opacity: 0.3;
+                         font-size: 60px;
+                         font-family: Monospace;
+                         white-space: nowrap;
+                         overflow: clip;
+
+                         transform: rotate(40deg);
+                         transform-origin: center;
+                       }
+                     </style>
+                     <foreignObject height='100%' width='100%'><div xmlns="http://www.w3.org/1999/xhtml">${content}</div></foreignObject>
+                   </svg>`;
+        let encodedSvg = btoa(svg);
+
+        element.css("background-image", `url("data:image/svg+xml;base64,${encodedSvg}")`);
     }
 
     getContent(width, height) {
         let content = "";
-        
+
         for (let line = 0; line < height; line++) {
-            content += this.getLine(width) + "\n";
+            content += `${this.getLine(width)}<br />`;
         }
 
         return content;
     }
 
     getLine(width) {
-        let selection = [ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "x", "=" ];
+        let selection = [ "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "x", "=" ];
         let content = "";
 
         for (let index = 0; index < width; index++) {
@@ -510,7 +534,7 @@ $(document).ready(function(){
     options.updateTableChoserText();
     templates.addTimesTableNumbers();
     title.update();
-    background.start(1000);
+    background.start(5000);
 
     options.toggleTableChooser(true);
 });
