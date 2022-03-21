@@ -19,7 +19,8 @@ class Settings {
                 6: true, 7: true, 8: true, 9: true,
                 10: true, 11: true, 12: true
             },
-            showCorrectAnswer: true
+            showCorrectAnswer: true,
+            fullscreen: true
         };
     }
 
@@ -33,6 +34,14 @@ class Settings {
 
     set showCorrectAnswer(value) {
         this.settings.showCorrectAnswer = value;
+    }
+
+    get showFullScreen() {
+        return this.settings.showFullScreen;
+    }
+
+    set showFullScreen(value) {
+        this.settings.showFullScreen = value;
     }
 }
 
@@ -253,6 +262,10 @@ class Sums{
         this.title.update();
         this.nextSum();
     }
+
+    clear() {
+        $(".sums .sum").each(function() { $(this).remove(); });
+    }
 }
 
 class Title {
@@ -328,8 +341,9 @@ class OptionsDialog {
         this.sums = sums;
 
         $(".tables .numbers").on("click", "input", this.updateTableOption.bind(this))
-        $(".chose-tables").click(this.toggleTableChooser.bind(this));
-        $(".toggle-choser").click(this.toggleTableChooser.bind(this));
+        $(".chose-tables").click(this.showDialog.bind(this));
+        $(".dialog-start").click(this.start.bind(this));
+        $(".dialog-close").click(this.closeDialog.bind(this));
     }
 
     enterFullScreen() {
@@ -360,18 +374,27 @@ class OptionsDialog {
         }
     }
 
-    toggleTableChooser(show) {
+    start() {
+        this.sums.clear();
+        this.closeDialog();
+    }
+
+    showDialog() {
         var tables = $(".tables");
         var sums = $(".sums");
         var choseTables = $(".chose-tables");
 
-        if (show === true || !tables.is(":visible")) {
-            $(".show-correct-answer input").prop("checked", this.settings.showCorrectAnswer);
-            tables.show();
-            sums.hide();
-            choseTables.hide();
-            return;
-        }
+        $(".show-correct-answer input").prop("checked", this.settings.showCorrectAnswer);
+        $(".show-fullscreen input").prop("checked", this.settings.showFullScreen);
+        tables.show();
+        sums.hide();
+        choseTables.hide();
+    }
+
+    closeDialog() {
+        var tables = $(".tables");
+        var sums = $(".sums");
+        var choseTables = $(".chose-tables");
 
         if (!Object.keys(this.settings.timesTables).length) {
             alert("You must select at least one number");
@@ -382,10 +405,13 @@ class OptionsDialog {
         sums.show();
         tables.hide();
         this.settings.showCorrectAnswer = $(".show-correct-answer input").prop("checked");
+        this.settings.showFullScreen = $(".show-fullscreen input").prop("checked");
         this.settings.save();
         this.updateTableChoserText();
         this.sums.replaceFirstSum();
-        this.enterFullScreen();
+        if (this.settings.showFullScreen) {
+            this.enterFullScreen();
+        }
     }
 
     updateTableChoserText() {
@@ -550,5 +576,5 @@ $(document).ready(function(){
     title.update();
     background.start(5000);
 
-    options.toggleTableChooser(true);
+    options.showDialog();
 });
