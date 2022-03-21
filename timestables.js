@@ -110,13 +110,14 @@ class Templates {
 }
 
 class Sums{
-    constructor(settings, templates, title, results, random){
+    constructor(settings, templates, title, results, random, background){
         this.settings = settings;
         this.currentSum = null;
         this.templates = templates;
         this.random = random;
         this.title = title;
         this.results = results;
+        this.background = background;
 
         $(".sums").on("keypress", "input", this.processAnswer.bind(this));
         $(".sums").on("click", ".answer", this.showAnswer.bind(this));
@@ -126,6 +127,7 @@ class Sums{
         var sum = this.getNextSum();
         this.currentSum = sum;
         this.templates.addSum(sum);
+        this.background.updateBackgrounds();
     }
 
     replaceFirstSum() {
@@ -460,11 +462,22 @@ class Background {
 
         $(".background").each(function() {
             var element = $(this);
+            if (element.closest("#templates").length > 0) {
+                return;
+            }
+
             updateBackground(element);
         });
     }
 
     updateBackground(element) {
+        let backgroundOnce = element.data("background-once");
+        let backgroundFixed = element.data("background-fixed");
+
+        if (backgroundFixed) {
+            return;
+        }
+
         let width = 600;
         let height = 300;
         let content = this.getContent(width, height);
@@ -491,6 +504,7 @@ class Background {
         let encodedSvg = btoa(svg);
 
         element.css("background-image", `url("data:image/svg+xml;base64,${encodedSvg}")`);
+        element.data("background-fixed", backgroundOnce);
     }
 
     getContent(width, height) {
@@ -527,9 +541,9 @@ $(document).ready(function(){
     var results = new Results();
     var title = new Title(results);
     var templates = new Templates(settings);
-    var sums = new Sums(settings, templates, title, results, random);
-    var options = new OptionsDialog(settings, sums);
     var background = new Background(random);
+    var sums = new Sums(settings, templates, title, results, random, background);
+    var options = new OptionsDialog(settings, sums);
 
     options.updateTableChoserText();
     templates.addTimesTableNumbers();
