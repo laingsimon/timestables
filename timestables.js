@@ -223,6 +223,8 @@ class Sums{
 
         this.title.update();
         this.nextSum();
+
+        new CompletedAnimation(sum.find(".answer")[0]).start();
     }
 
     getRandomCorrectSymbol(){
@@ -558,6 +560,84 @@ class Background {
         }
 
         return content;
+    }
+}
+
+class CompletedAnimation {
+    constructor(element) {
+        this.html = $(element).html();
+        this.tick = 1;
+        this.handle = null;
+        this.maxTicks = 0;
+        this.ghostElement = null;
+        this.element = element;
+        this.fontSize = Number.parseInt($(element).css("font-size").replace(/px/g, ""));
+        this.increasePerTick = 1;
+
+        let rect = this.element.getClientRects()[0];
+        this.referenceRect = {
+            centreY: rect.top + (rect.height / 2),
+            centreX: rect.left + (rect.width / 2)
+        };
+    }
+
+    start(durationSeconds, delayBetweenUpdates, maxFontSize) {
+        durationSeconds = durationSeconds || 0.5;
+        delayBetweenUpdates = delayBetweenUpdates || 5;
+        maxFontSize = maxFontSize || 150;
+
+        let ticksPerSecond = 1000 / delayBetweenUpdates;
+        this.maxTicks = 1 + (ticksPerSecond * durationSeconds);
+        this.increasePerTick = (maxFontSize - this.fontSize) / this.maxTicks;
+
+        this.addGhostElement();
+        this.handle = window.setInterval(this.animate.bind(this), delayBetweenUpdates);
+        this.animate();
+    }
+
+    stop() {
+        if (this.handle) {
+            window.clearInterval(this.handle);
+            this.handle = null;
+        }
+
+        this.removeGhostElement();
+    }
+
+    animate() {
+        this.tick++;
+
+        if (this.tick > this.maxTicks || this.ghostElement == null) {
+            this.stop();
+            return;
+        }
+
+        let opacityPercent = 1 - (this.tick / this.maxTicks);
+
+        $(this.ghostElement).css("font-size", this.fontSize + (this.increasePerTick * this.tick) + "px");
+        $(this.ghostElement).css("opacity", opacityPercent);
+        $(this.ghostElement).show();
+
+        let ghostRect = this.ghostElement.getClientRects()[0];
+
+        $(this.ghostElement).css("top", this.referenceRect.centreY - (ghostRect.width / 2));
+        $(this.ghostElement).css("left", this.referenceRect.centreX - (ghostRect.height / 2));
+    }
+
+    addGhostElement() {
+        let element = document.createElement("div");
+        element.setAttribute("class", "answer-animation");
+        element.innerHTML = this.html;
+        document.body.appendChild(element);
+
+        this.ghostElement = element;
+    }
+
+    removeGhostElement() {
+        if (this.ghostElement) {
+            $(this.ghostElement).remove();
+            this.ghostElement = null;
+        }
     }
 }
 

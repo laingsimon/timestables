@@ -173,3 +173,9 @@ h3 label input {
 .background {
     background-position: center;
 }
+
+.answer-animation {
+    position: absolute;
+    display: none;
+    text-align: center;
+}
