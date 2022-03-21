@@ -304,15 +304,16 @@ class Title {
         $(".title").html(title);
         return;
     }
+
+    reset() {
+        this.results.reset();
+        this.update();
+    }
 }
 
 class Results {
     constructor(){
-        this.totals = {
-            correct: 0,
-            incorrect: 0,
-            skipped: 0
-        }
+        this.reset();
     }
 
     get correct(){
@@ -335,12 +336,21 @@ class Results {
     set skipped(value) {
         this.totals.skipped = value;
     }
+
+    reset() {
+        this.totals = {
+            correct: 0,
+            incorrect: 0,
+            skipped: 0
+        };
+    }
 }
 
 class OptionsDialog {
-    constructor(settings, sums) {
+    constructor(settings, sums, title) {
         this.settings = settings;
         this.sums = sums;
+        this.title = title;
 
         $(".tables .numbers").on("click", "input", this.updateTableOption.bind(this))
         $(".chose-tables").click(this.showDialog.bind(this));
@@ -378,6 +388,7 @@ class OptionsDialog {
 
     start() {
         this.sums.clear();
+        this.title.reset();
         this.closeDialog();
     }
 
@@ -649,7 +660,7 @@ $(document).ready(function(){
     var templates = new Templates(settings);
     var background = new Background(random);
     var sums = new Sums(settings, templates, title, results, random, background);
-    var options = new OptionsDialog(settings, sums);
+    var options = new OptionsDialog(settings, sums, title);
 
     options.updateTableChoserText();
     templates.addTimesTableNumbers();
