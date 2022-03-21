@@ -506,7 +506,7 @@ class OptionsDialog {
             }
         });
 
-        $(".chose-tables").html("Selected: " + chosenTables);
+        $(".chose-tables").html("⚙ " + chosenTables);
     }
 
     shortenSelectedTables(selectedTables) {

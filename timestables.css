@@ -66,8 +66,8 @@ h3 label input {
 
 .tables .dialog {
     position: relative;
-    top: 25%;
-    left: 25%;
+    top: 20%;
+    left: 15%;
     width: 50%;
     box-shadow: #888888 5px 5px 5px;
     border-radius: 5px;
