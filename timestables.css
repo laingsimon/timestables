@@ -74,6 +74,7 @@ h3 label input {
     text-align: center;
     background: #cccccc;
     z-index: 1;
+    min-width: 270px;
 }
 
 .sums {
