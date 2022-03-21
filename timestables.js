@@ -265,21 +265,21 @@ class Title {
 
         if (this.results.correct) {
             if (title !== "") {
-                title += ", "
+                title += " "
             }
-            title += `Correct: ${this.results.correct}`;
+            title += `👍 x ${this.results.correct}`;
         }
         if (this.results.incorrect) {
             if (title !== "") {
-                title += ", "
+                title += " "
             }
-            title += `Incorrect: ${this.results.incorrect}`;
+            title += `👎 x ${this.results.incorrect}`;
         }
         if (this.results.skipped) {
             if (title !== "") {
-                title += ", "
+                title += " "
             }
-            title += `Skipped: ${this.results.skipped}`;
+            title += `❔ x ${this.results.skipped}`;
         }
 
         if (title === "") {
@@ -404,7 +404,7 @@ class OptionsDialog {
             }
         });
 
-        $(".chose-tables").html("Click to change: " + chosenTables);
+        $(".chose-tables").html("Selected: " + chosenTables);
     }
 
     shortenSelectedTables(selectedTables) {
@@ -489,7 +489,7 @@ class Background {
                      <style>
                        div {
                          color: #ffffff;
-                         opacity: 0.3;
+                         opacity: 0.2;
                          font-size: 80px;
                          font-family: Monospace;
                          white-space: nowrap;
