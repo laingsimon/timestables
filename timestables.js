@@ -478,19 +478,19 @@ class Background {
             return;
         }
 
-        let width = 600;
-        let height = 300;
+        let width = 60;
+        let height = 30;
         let content = this.getContent(width, height);
 
-        let charWidth = 12;
-        let lineHeight = 24;
+        let charWidth = 40;
+        let lineHeight = 80;
 
         let svg = `<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='${height * lineHeight}px' width='${((width * 2) - 1) * charWidth}px'>
                      <style>
                        div {
                          color: #ffffff;
                          opacity: 0.3;
-                         font-size: 60px;
+                         font-size: 80px;
                          font-family: Monospace;
                          white-space: nowrap;
                          overflow: clip;
