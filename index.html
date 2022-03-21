@@ -15,7 +15,10 @@
                         <div class="numbers">
                         </div>
                         <label class="show-correct-answer"><input type="checkbox" /> Show correct answer</label>
-                        <label class="show-fullscreen"><input type="checkbox" checked="checked" /> Full screen</label>
+                        <label class="show-fullscreen"><input type="checkbox" /> Full screen</label>
+                        <hr />
+                        <label class="multiplication"><input type="checkbox" /> Multiplication</label>
+                        <label class="division"><input type="checkbox" /> Division</label>
                         <hr />
                         <span class="dialog-start button">(Re)Start &#x27a1;</span>
                         <span class="dialog-close button">Close</span>
@@ -41,7 +44,7 @@
             <div id="sum">
                 <div class="sum background" data-background-once="true">
                     <input type="number" min="1" max="12" pattern="\d{0,2}" class="first" value="{first}" />
-                    <label>X</label>
+                    <label>{operator}</label>
                     <input type="number" min="1" max="12" pattern="\d{0,2}" class="second" value="{second}" />
                     <label>=</label>
                     <input type="number" min="1" max="144" pattern="\d{0,3}" class="equals" value="{equals}" />

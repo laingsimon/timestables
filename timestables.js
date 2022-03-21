@@ -20,7 +20,9 @@ class Settings {
                 10: true, 11: true, 12: true
             },
             showCorrectAnswer: true,
-            fullscreen: true
+            fullscreen: true,
+            multiplication: true,
+            division: false
         };
     }
 
@@ -42,6 +44,22 @@ class Settings {
 
     set showFullScreen(value) {
         this.settings.showFullScreen = value;
+    }
+
+    get division() {
+        return this.settings.division;
+    }
+
+    set division(value) {
+        this.settings.division = value;
+    }
+
+    get multiplication() {
+        return this.settings.multiplication;
+    }
+
+    set multiplication(value) {
+        this.settings.multiplication = value;
     }
 }
 
@@ -76,6 +94,7 @@ class Templates {
         template = template.replace(/{first}/g, sum.first || "");
         template = template.replace(/{second}/g, sum.second || "");
         template = template.replace(/{equals}/g, sum.equals || "");
+        template = template.replace(/{operator}/g, sum.operator || "");
 
         if (sum.first) {
             template = template.replace(/class="first/g, "readonly class=\"first");
@@ -154,10 +173,13 @@ class Sums{
         var filterOption = this.random.between(1, 2);
         var first = this.random.between(2, 12, filterOption == 1 ? this.settings.timesTables : null);
         var second = this.random.between(2, 12, filterOption == 2 ? this.settings.timesTables : null);
+        var bigger = first >= second ? first : second;
+        var smaller = first < second ? first : second;
 
         switch (mode) {
             case "?xn=n":
                 return {
+                    operator: "x",
                     first: null,
                     second: second,
                     equals: first * second,
@@ -165,6 +187,7 @@ class Sums{
                 };
             case "nx?=n":
                 return {
+                    operator: "x",
                     first: first,
                     second: null,
                     equals: first * second,
@@ -172,20 +195,56 @@ class Sums{
                 };
             case "nxn=?":
                 return {
+                    operator: "x",
                     first: first,
                     second: second,
                     equals: null,
                     answer: first * second,
                 };
+
+
+            case "?/n=n":
+                return {
+                    operator: "/",
+                    first: null,
+                    second: smaller,
+                    equals: bigger,
+                    answer: bigger * smaller,
+                };
+            case "n/?=n":
+                return {
+                    operator: "/",
+                    first: bigger * smaller,
+                    second: null,
+                    equals: bigger,
+                    answer: smaller,
+                };
+            case "n/n=?":
+                return {
+                    operator: "/",
+                    first: bigger * smaller,
+                    second: smaller,
+                    equals: null,
+                    answer: bigger,
+                };
         }
     }
 
     getRandomMode() {
-        var mode = this.random.between(1, 3, null);
+        let range = {
+            min: this.settings.multiplication ? 1 : 4,
+            max: this.settings.division ? 6 : 3
+        };
+
+        var mode = this.random.between(range.min, range.max, null);
         switch (mode){
             case 1: return "?xn=n";
             case 2: return "nx?=n";
             case 3: return "nxn=?";
+
+            case 4: return "?/n=n";
+            case 5: return "n/?=n";
+            case 6: return "n/n=?";
         }
     }
 
@@ -399,6 +458,8 @@ class OptionsDialog {
 
         $(".show-correct-answer input").prop("checked", this.settings.showCorrectAnswer);
         $(".show-fullscreen input").prop("checked", this.settings.showFullScreen);
+        $(".multiplication input").prop("checked", this.settings.multiplication);
+        $(".division input").prop("checked", this.settings.division);
         tables.show();
         sums.hide();
         choseTables.hide();
@@ -419,6 +480,8 @@ class OptionsDialog {
         tables.hide();
         this.settings.showCorrectAnswer = $(".show-correct-answer input").prop("checked");
         this.settings.showFullScreen = $(".show-fullscreen input").prop("checked");
+        this.settings.multiplication = $(".multiplication input").prop("checked");
+        this.settings.division = $(".division input").prop("checked");
         this.settings.save();
         this.updateTableChoserText();
         this.sums.replaceFirstSum();
