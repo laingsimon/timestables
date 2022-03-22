@@ -98,6 +98,7 @@ h3 label input {
     margin: 10px;
     box-shadow: #888888 2px 2px 5px;
     border-radius: 10px;
+    position: relative;
 }
 
 .sum input[readonly], .sum input[disabled] {
@@ -127,6 +128,15 @@ h3 label input {
 .sum input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.sum .duration {
+    display: block;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    padding: 5px;
+    font-size: 15px;
 }
 
 .correct-answer{

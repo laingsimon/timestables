@@ -156,6 +156,8 @@ class Sums{
     nextSum(){
         let sum = this.getNextSum();
         this.currentSum = sum;
+        this.startTime = this.startTime || new Date();
+        this.sumStart = new Date();
         let sumElement = this.templates.addSum(sum);
         this.background.updateBackground($(sumElement));
     }
@@ -262,10 +264,18 @@ class Sums{
             return;
         }
 
+        let currentTime = new Date();
+        let durationMs = currentTime.valueOf() - this.sumStart.valueOf();
+        let decimalPlaces = 2;
+        let roundingFactor = Math.pow(10, decimalPlaces - 1);
+        let durationSeconds = Math.round((durationMs / 1000) * roundingFactor) / roundingFactor;
+
         let sum = $(eventTarget).closest(".sum");
         sum.find("input").each(function(){
             $(eventTarget).prop("disabled", true);
         });
+
+        sum.find(".duration").text(durationSeconds + "s");
 
         if (answer == this.currentSum.answer) {
             sum.addClass("correct");
@@ -328,6 +338,7 @@ class Sums{
 
     clear() {
         $(".sums .sum").each(function() { $(this).remove(); });
+        this.startTime = null;
     }
 }
 
