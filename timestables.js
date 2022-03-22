@@ -8,7 +8,7 @@ class Settings {
     }
 
     reload(){
-        var json = window.localStorage.getItem("settings");
+        let json = window.localStorage.getItem("settings");
         this.settings = json ? JSON.parse(json) : this.getDefaultSettings();
     }
 
@@ -65,11 +65,11 @@ class Settings {
 
 class Random {
     between(min, max, filter) {
-        var iteration = 0;
+        let iteration = 0;
 
         while (iteration < 100) {
             iteration++;
-            var number = Math.floor(Math.random() * (max - min + 1) + min);
+            let number = Math.floor(Math.random() * (max - min + 1) + min);
 
             if (!filter) {
                 return number;
@@ -90,7 +90,7 @@ class Templates {
     }
 
     addSum(sum){
-        var template = $("#templates #sum").html();
+        let template = $("#templates #sum").html();
         template = template.replace(/{first}/g, sum.first || "");
         template = template.replace(/{second}/g, sum.second || "");
         template = template.replace(/{equals}/g, sum.equals || "");
@@ -106,23 +106,25 @@ class Templates {
             template = template.replace(/class="equals/g, "readonly class=\"equals");
         }
 
-        var firstExistingSum = $(".sums .sum");
+        let firstExistingSum = $(".sums .sum");
         if (firstExistingSum.length === 0) {
             $(".sums").append($(template));
         } else {
             $(template).insertBefore(firstExistingSum[0])
         }
 
-        var newSum = $($(".sums .sum")[0]);
+        let newSum = $($(".sums .sum")[0]);
         newSum.find("input").each(function(){
             if (!$(this).prop("readonly")) {
                 $(this).focus();
             }
         });
+
+        return newSum[0];
     }
 
     addTimesTableNumber(number, checked) {
-        var template = $("#templates #timestable").html();
+        let template = $("#templates #timestable").html();
         template = template.replace(/{number}/g, number);
 
         $(".tables .numbers").append($(template));
@@ -130,8 +132,8 @@ class Templates {
     }
 
     addTimesTableNumbers() {
-        for (var number = 2; number <= 12; number++) {
-            var shouldBeChecked = this.settings.timesTables[number] || false;
+        for (let number = 2; number <= 12; number++) {
+            let shouldBeChecked = this.settings.timesTables[number] || false;
             this.addTimesTableNumber(number, shouldBeChecked);
         }
     }
@@ -152,15 +154,15 @@ class Sums{
     }
 
     nextSum(){
-        var sum = this.getNextSum();
+        let sum = this.getNextSum();
         this.currentSum = sum;
-        this.templates.addSum(sum);
-        this.background.updateBackgrounds();
+        let sumElement = this.templates.addSum(sum);
+        this.background.updateBackground($(sumElement));
     }
 
     replaceFirstSum() {
         if (this.currentSum != null) {
-            var firstExistingSum = $(".sums .sum")[0];
+            let firstExistingSum = $(".sums .sum")[0];
             $(firstExistingSum).remove();
             this.currentSum = null;
         }
@@ -169,12 +171,12 @@ class Sums{
     }
 
     getNextSum() {
-        var mode = this.getRandomMode();
-        var filterOption = this.random.between(1, 2);
-        var first = this.random.between(2, 12, filterOption == 1 ? this.settings.timesTables : null);
-        var second = this.random.between(2, 12, filterOption == 2 ? this.settings.timesTables : null);
-        var bigger = first >= second ? first : second;
-        var smaller = first < second ? first : second;
+        let mode = this.getRandomMode();
+        let filterOption = this.random.between(1, 2);
+        let first = this.random.between(2, 12, filterOption == 1 ? this.settings.timesTables : null);
+        let second = this.random.between(2, 12, filterOption == 2 ? this.settings.timesTables : null);
+        let bigger = first >= second ? first : second;
+        let smaller = first < second ? first : second;
 
         switch (mode) {
             case "?×n=n":
@@ -236,7 +238,7 @@ class Sums{
             max: this.settings.division ? 6 : 3
         };
 
-        var mode = this.random.between(range.min, range.max, null);
+        let mode = this.random.between(range.min, range.max, null);
         switch (mode){
             case 1: return "?×n=n";
             case 2: return "n×?=n";
@@ -253,14 +255,14 @@ class Sums{
             return;
         }
 
-        var eventTarget = event.currentTarget;
-        var answer = $(eventTarget).val();
+        let eventTarget = event.currentTarget;
+        let answer = $(eventTarget).val();
 
         if (!answer) {
             return;
         }
 
-        var sum = $(eventTarget).closest(".sum");
+        let sum = $(eventTarget).closest(".sum");
         sum.find("input").each(function(){
             $(eventTarget).prop("disabled", true);
         });
@@ -287,21 +289,21 @@ class Sums{
     }
 
     getRandomCorrectSymbol(){
-        var codes = [ '&#x1f603;', '&#x1f607;', '&#x1f609;', '&#x1f60d;' ];
-        var random = this.random.between(0, codes.length - 1);
+        let codes = [ '&#x1f603;', '&#x1f607;', '&#x1f609;', '&#x1f60d;' ];
+        let random = this.random.between(0, codes.length - 1);
         return codes[random];
     }
 
     getRandomIncorrectSymbol() {
-        var codes = [ '&#x1f615;', '&#x1f612;', '&#x1f61f;' ];
-        var random = this.random.between(0, codes.length - 1);
+        let codes = [ '&#x1f615;', '&#x1f612;', '&#x1f61f;' ];
+        let random = this.random.between(0, codes.length - 1);
         return codes[random];
     }
 
     showAnswer(event){
-        var eventTarget = event.currentTarget;
-        var answer = $(eventTarget);
-        var sum = answer.closest(".sum");
+        let eventTarget = event.currentTarget;
+        let answer = $(eventTarget);
+        let sum = answer.closest(".sum");
 
         if (sum.hasClass("complete")){
             return;
@@ -309,7 +311,7 @@ class Sums{
 
         answer.html("");
         answer.removeClass("dont-know");
-        var theAnswer = this.currentSum.answer;
+        let theAnswer = this.currentSum.answer;
         sum.addClass("skipped");
         sum.addClass("complete");
         sum.find("input").each(function() {
@@ -335,7 +337,7 @@ class Title {
     }
 
     update() {
-        var title = "";
+        let title = "";
 
         if (this.results.correct) {
             if (title !== "") {
@@ -418,26 +420,26 @@ class OptionsDialog {
     }
 
     enterFullScreen() {
-        var doc = window.document;
-        var docEl = doc.documentElement;
+        let doc = window.document;
+        let docEl = doc.documentElement;
 
-        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        let requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
 
         requestFullScreen.call(docEl);
     }
 
     exitFullScreen() {
-        var doc = window.document;
+        let doc = window.document;
 
-        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        let cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
         cancelFullScreen.call(doc);
     }
 
     updateTableOption(event) {
-        var currentTarget = event.currentTarget;
+        let currentTarget = event.currentTarget;
 
-        var number = $(currentTarget).val();
+        let number = $(currentTarget).val();
         if ($(currentTarget).prop("checked")){
             this.settings.timesTables[number] = true;
         } else {
@@ -452,9 +454,9 @@ class OptionsDialog {
     }
 
     showDialog() {
-        var tables = $(".tables");
-        var sums = $(".sums");
-        var choseTables = $(".chose-tables");
+        let tables = $(".tables");
+        let sums = $(".sums");
+        let choseTables = $(".chose-tables");
 
         $(".show-correct-answer input").prop("checked", this.settings.showCorrectAnswer);
         $(".show-fullscreen input").prop("checked", this.settings.showFullScreen);
@@ -466,9 +468,9 @@ class OptionsDialog {
     }
 
     closeDialog() {
-        var tables = $(".tables");
-        var sums = $(".sums");
-        var choseTables = $(".chose-tables");
+        let tables = $(".tables");
+        let sums = $(".sums");
+        let choseTables = $(".chose-tables");
 
         if (!Object.keys(this.settings.timesTables).length) {
             alert("You must select at least one number");
@@ -491,9 +493,9 @@ class OptionsDialog {
     }
 
     updateTableChoserText() {
-        var chosenTables = "";
+        let chosenTables = "";
 
-        var selectedTimesTables = Object.keys(this.settings.timesTables);
+        let selectedTimesTables = Object.keys(this.settings.timesTables);
         this.shortenSelectedTables(selectedTimesTables).forEach(function(range) {
             if (chosenTables) {
                 chosenTables += range.last ? " & " : ", ";
@@ -510,11 +512,11 @@ class OptionsDialog {
     }
 
     shortenSelectedTables(selectedTables) {
-        var numberRange = null;
+        let numberRange = null;
 
-        var numbers = [];
-        for (var index = 0; index < selectedTables.length; index++){
-            var currentNumber = Number.parseInt(selectedTables[index]);
+        let numbers = [];
+        for (let index = 0; index < selectedTables.length; index++){
+            let currentNumber = Number.parseInt(selectedTables[index]);
             if (numberRange && currentNumber == numberRange.to + 1) {
                 numberRange.to = currentNumber;
                 continue;
@@ -563,7 +565,7 @@ class Background {
         let updateBackground = this.updateBackground.bind(this);
 
         $(".background").each(function() {
-            var element = $(this);
+            let element = $(this);
             if (element.closest("#templates").length > 0) {
                 return;
             }
@@ -716,14 +718,14 @@ class CompletedAnimation {
 }
 
 $(document).ready(function(){
-    var random = new Random();
-    var settings = new Settings();
-    var results = new Results();
-    var title = new Title(results);
-    var templates = new Templates(settings);
-    var background = new Background(random);
-    var sums = new Sums(settings, templates, title, results, random, background);
-    var options = new OptionsDialog(settings, sums, title);
+    let random = new Random();
+    let settings = new Settings();
+    let results = new Results();
+    let title = new Title(results);
+    let templates = new Templates(settings);
+    let background = new Background(random);
+    let sums = new Sums(settings, templates, title, results, random, background);
+    let options = new OptionsDialog(settings, sums, title);
 
     options.updateTableChoserText();
     templates.addTimesTableNumbers();
