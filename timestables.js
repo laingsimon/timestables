@@ -177,25 +177,25 @@ class Sums{
         var smaller = first < second ? first : second;
 
         switch (mode) {
-            case "?xn=n":
+            case "?×n=n":
                 return {
-                    operator: "x",
+                    operator: "×",
                     first: null,
                     second: second,
                     equals: first * second,
                     answer: first,
                 };
-            case "nx?=n":
+            case "n×?=n":
                 return {
-                    operator: "x",
+                    operator: "×",
                     first: first,
                     second: null,
                     equals: first * second,
                     answer: second,
                 };
-            case "nxn=?":
+            case "n×n=?":
                 return {
-                    operator: "x",
+                    operator: "×",
                     first: first,
                     second: second,
                     equals: null,
@@ -203,25 +203,25 @@ class Sums{
                 };
 
 
-            case "?/n=n":
+            case "?÷n=n":
                 return {
-                    operator: "/",
+                    operator: "÷",
                     first: null,
                     second: smaller,
                     equals: bigger,
                     answer: bigger * smaller,
                 };
-            case "n/?=n":
+            case "n÷?=n":
                 return {
-                    operator: "/",
+                    operator: "÷",
                     first: bigger * smaller,
                     second: null,
                     equals: bigger,
                     answer: smaller,
                 };
-            case "n/n=?":
+            case "n÷n=?":
                 return {
-                    operator: "/",
+                    operator: "÷",
                     first: bigger * smaller,
                     second: smaller,
                     equals: null,
@@ -238,13 +238,13 @@ class Sums{
 
         var mode = this.random.between(range.min, range.max, null);
         switch (mode){
-            case 1: return "?xn=n";
-            case 2: return "nx?=n";
-            case 3: return "nxn=?";
+            case 1: return "?×n=n";
+            case 2: return "n×?=n";
+            case 3: return "n×n=?";
 
-            case 4: return "?/n=n";
-            case 5: return "n/?=n";
-            case 6: return "n/n=?";
+            case 4: return "?÷n=n";
+            case 5: return "n÷?=n";
+            case 6: return "n÷n=?";
         }
     }
 
