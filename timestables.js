@@ -351,6 +351,10 @@ class Sums{
         $(".sums .sum").each(function() { $(this).remove(); });
         this.startTime = null;
     }
+
+    count() {
+        return $(".sums .sum").length;
+    }
 }
 
 class Title {
@@ -488,6 +492,7 @@ class OptionsDialog {
         tables.show();
         sums.hide();
         choseTables.hide();
+        $(".dialog-close").toggle(this.sums.count() >= 1);
     }
 
     closeDialog() {
