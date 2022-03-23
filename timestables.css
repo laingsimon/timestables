@@ -200,3 +200,10 @@ h3 label input {
     display: none;
     text-align: center;
 }
+
+.enter-fullscreen img,
+.exit-fullscreen img {
+    height: 20px;
+    vertical-align: baseline;
+    cursor: pointer;
+}

@@ -358,8 +358,30 @@ class Sums{
 }
 
 class Title {
-    constructor(results){
+    constructor(results, screen){
         this.results = results;
+        this.screen = screen;
+        $(".enter-fullscreen").click(this.enterFullScreen.bind(this));
+        $(".exit-fullscreen").click(this.exitFullScreen.bind(this));
+
+        let fullScreenChanged = function() {
+            let isFullScreen = document.fullscreenElement;
+            $(".enter-fullscreen").toggle(!isFullScreen);
+            $(".exit-fullscreen").toggle(isFullScreen);
+        };
+
+        document.addEventListener('fullscreenchange', fullScreenChanged, false);
+        document.addEventListener('mozfullscreenchange', fullScreenChanged, false);
+        document.addEventListener('MSFullscreenChange', fullScreenChanged, false);
+        document.addEventListener('webkitfullscreenchange', fullScreenChanged, false);
+    }
+
+    enterFullScreen() {
+        this.screen.enterFullScreen();
+    }
+
+    exitFullScreen() {
+        this.screen.exitFullScreen();
     }
 
     update() {
@@ -433,18 +455,7 @@ class Results {
     }
 }
 
-class OptionsDialog {
-    constructor(settings, sums, title) {
-        this.settings = settings;
-        this.sums = sums;
-        this.title = title;
-
-        $(".tables .numbers").on("click", "input", this.updateTableOption.bind(this))
-        $(".chose-tables").click(this.showDialog.bind(this));
-        $(".dialog-start").click(this.start.bind(this));
-        $(".dialog-close").click(this.closeDialog.bind(this));
-    }
-
+class Screen {
     enterFullScreen() {
         let doc = window.document;
         let docEl = doc.documentElement;
@@ -460,6 +471,20 @@ class OptionsDialog {
         let cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
         cancelFullScreen.call(doc);
+    }
+}
+
+class OptionsDialog {
+    constructor(settings, sums, title, screen) {
+        this.settings = settings;
+        this.sums = sums;
+        this.title = title;
+        this.screen = screen;
+
+        $(".tables .numbers").on("click", "input", this.updateTableOption.bind(this))
+        $(".chose-tables").click(this.showDialog.bind(this));
+        $(".dialog-start").click(this.start.bind(this));
+        $(".dialog-close").click(this.closeDialog.bind(this));
     }
 
     updateTableOption(event) {
@@ -517,7 +542,8 @@ class OptionsDialog {
         this.updateTableChoserText();
         this.sums.replaceFirstSum();
         if (this.settings.showFullScreen) {
-            this.enterFullScreen();
+            this.screen.enterFullScreen();
+            this.title.update();
         }
     }
 
@@ -747,14 +773,15 @@ class CompletedAnimation {
 }
 
 $(document).ready(function(){
+    let screen = new Screen();
     let random = new Random();
     let settings = new Settings();
     let results = new Results();
-    let title = new Title(results);
+    let title = new Title(results, screen);
     let templates = new Templates(settings);
     let background = new Background(random);
     let sums = new Sums(settings, templates, title, results, random, background);
-    let options = new OptionsDialog(settings, sums, title);
+    let options = new OptionsDialog(settings, sums, title, screen);
 
     options.updateTableChoserText();
     templates.addTimesTableNumbers();
