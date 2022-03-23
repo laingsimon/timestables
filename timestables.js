@@ -22,7 +22,8 @@ class Settings {
             showCorrectAnswer: true,
             fullscreen: true,
             multiplication: true,
-            division: false
+            division: false,
+            showTime: true
         };
     }
 
@@ -60,6 +61,14 @@ class Settings {
 
     set multiplication(value) {
         this.settings.multiplication = value;
+    }
+
+    get showTime(){
+        return this.settings.showTime;
+    }
+
+    set showTime(value) {
+        this.settings.showTime = value;
     }
 }
 
@@ -264,18 +273,20 @@ class Sums{
             return;
         }
 
-        let currentTime = new Date();
-        let durationMs = currentTime.valueOf() - this.sumStart.valueOf();
-        let decimalPlaces = 2;
-        let roundingFactor = Math.pow(10, decimalPlaces - 1);
-        let durationSeconds = Math.round((durationMs / 1000) * roundingFactor) / roundingFactor;
-
         let sum = $(eventTarget).closest(".sum");
         sum.find("input").each(function(){
             $(eventTarget).prop("disabled", true);
         });
 
-        sum.find(".duration").text(durationSeconds + "s");
+        if (this.settings.showTime) {
+            let currentTime = new Date();
+            let durationMs = currentTime.valueOf() - this.sumStart.valueOf();
+            let decimalPlaces = 2;
+            let roundingFactor = Math.pow(10, decimalPlaces - 1);
+            let durationSeconds = Math.round((durationMs / 1000) * roundingFactor) / roundingFactor;
+
+            sum.find(".duration").text(durationSeconds + "s");
+        }
 
         if (answer == this.currentSum.answer) {
             sum.addClass("correct");
@@ -473,6 +484,7 @@ class OptionsDialog {
         $(".show-fullscreen input").prop("checked", this.settings.showFullScreen);
         $(".multiplication input").prop("checked", this.settings.multiplication);
         $(".division input").prop("checked", this.settings.division);
+        $(".show-time input").prop("checked", this.settings.showTime);
         tables.show();
         sums.hide();
         choseTables.hide();
@@ -495,6 +507,7 @@ class OptionsDialog {
         this.settings.showFullScreen = $(".show-fullscreen input").prop("checked");
         this.settings.multiplication = $(".multiplication input").prop("checked");
         this.settings.division = $(".division input").prop("checked");
+        this.settings.showTime = $(".show-time input").prop("checked");
         this.settings.save();
         this.updateTableChoserText();
         this.sums.replaceFirstSum();
