@@ -13,21 +13,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-$(document).ready(function(){
-    let screen = new Screen();
-    let random = new Random();
-    let settings = new Settings();
-    let results = new Results();
-    let title = new Title(results, screen);
-    let templates = new Templates(settings);
-    let background = new Background(random);
-    let sums = new Sums(settings, templates, title, results, random, background);
-    let options = new OptionsDialog(settings, sums, title, screen);
+class Screen {
+    enterFullScreen() {
+        let doc = window.document;
+        let docEl = doc.documentElement;
 
-    options.updateTableChoserText();
-    templates.addTimesTableNumbers();
-    title.update();
-    background.start(5000);
+        let requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
 
-    options.showDialog();
-});
+        requestFullScreen.call(docEl);
+    }
+
+    exitFullScreen() {
+        let doc = window.document;
+
+        let cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+        cancelFullScreen.call(doc);
+    }
+}

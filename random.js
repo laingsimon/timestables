@@ -13,21 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-$(document).ready(function(){
-    let screen = new Screen();
-    let random = new Random();
-    let settings = new Settings();
-    let results = new Results();
-    let title = new Title(results, screen);
-    let templates = new Templates(settings);
-    let background = new Background(random);
-    let sums = new Sums(settings, templates, title, results, random, background);
-    let options = new OptionsDialog(settings, sums, title, screen);
+class Random {
+    between(min, max, filter) {
+        let iteration = 0;
 
-    options.updateTableChoserText();
-    templates.addTimesTableNumbers();
-    title.update();
-    background.start(5000);
+        while (iteration < 100) {
+            iteration++;
+            let number = Math.floor(Math.random() * (max - min + 1) + min);
 
-    options.showDialog();
-});
+            if (!filter) {
+                return number;
+            }
+
+            if (filter[number]) {
+                return number;
+            }
+        }
+
+        throw new Error(`Unable to get a random number between ${min} and ${max}`);
+    }
+}

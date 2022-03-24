@@ -13,21 +13,37 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-$(document).ready(function(){
-    let screen = new Screen();
-    let random = new Random();
-    let settings = new Settings();
-    let results = new Results();
-    let title = new Title(results, screen);
-    let templates = new Templates(settings);
-    let background = new Background(random);
-    let sums = new Sums(settings, templates, title, results, random, background);
-    let options = new OptionsDialog(settings, sums, title, screen);
+class Results {
+    constructor(){
+        this.reset();
+    }
 
-    options.updateTableChoserText();
-    templates.addTimesTableNumbers();
-    title.update();
-    background.start(5000);
+    get correct(){
+        return this.totals.correct;
+    }
+    set correct(value) {
+        this.totals.correct = value;
+    }
 
-    options.showDialog();
-});
+    get incorrect(){
+        return this.totals.incorrect;
+    }
+    set incorrect(value) {
+        this.totals.incorrect = value;
+    }
+
+    get skipped(){
+        return this.totals.skipped;
+    }
+    set skipped(value) {
+        this.totals.skipped = value;
+    }
+
+    reset() {
+        this.totals = {
+            correct: 0,
+            incorrect: 0,
+            skipped: 0
+        };
+    }
+}
