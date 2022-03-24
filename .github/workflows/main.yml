@@ -22,11 +22,17 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s . --pattern *.html
-      - name: Upload assets to blob storage
+      - name: Upload js to blob storage
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s . --pattern "timestables.*"
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s . --pattern "*.js"
+      - name: Upload css to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s . --pattern "*.css"
+
       - name: Purge Azure CDN
         uses: azure/CLI@v1
         with:
