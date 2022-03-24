@@ -544,6 +544,8 @@ class OptionsDialog {
         if (this.settings.showFullScreen) {
             this.screen.enterFullScreen();
             this.title.update();
+        } else {
+            this.screen.exitFullScreen();
         }
     }
 
