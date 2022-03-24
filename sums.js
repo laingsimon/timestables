@@ -23,8 +23,32 @@ class Sums{
         this.results = results;
         this.background = background;
 
-        $(".sums").on("keypress", "input", this.processAnswer.bind(this));
-        $(".sums").on("click", ".answer", this.showAnswer.bind(this));
+        let onKeyPress = function(event) {
+            // input only
+            if (event.target.tagName !== "INPUT") {
+                return;
+            }
+
+            this.processAnswer({
+                keyCode: event.keyCode,
+                currentTarget: event.target
+            });
+        }
+
+        let onClick = function(event) {
+            //.answer only
+            if (event.target.className.indexOf("answer") === -1) {
+                return;
+            }
+
+            this.showAnswer({
+                currentTarget: event.target
+            });
+        }
+
+        let sumsElement = document.getElementsByClassName("sums")[0];
+        sumsElement.addEventListener("keypress", onKeyPress.bind(this));
+        sumsElement.addEventListener("click", onClick.bind(this));
     }
 
     nextSum(){
@@ -33,13 +57,15 @@ class Sums{
         this.startTime = this.startTime || new Date();
         this.sumStart = new Date();
         let sumElement = this.templates.addSum(sum);
-        this.background.updateBackground($(sumElement));
+        this.background.updateBackground(sumElement);
     }
 
     replaceFirstSum() {
         if (this.currentSum != null) {
-            let firstExistingSum = $(".sums .sum")[0];
-            $(firstExistingSum).remove();
+            let firstExistingSum = this.sumElements()[0];
+            if (firstExistingSum) {
+                firstExistingSum.remove();
+            }
             this.currentSum = null;
         }
 
@@ -132,16 +158,14 @@ class Sums{
         }
 
         let eventTarget = event.currentTarget;
-        let answer = $(eventTarget).val();
+        let answer = eventTarget.value;
 
         if (!answer) {
             return;
         }
 
-        let sum = $(eventTarget).closest(".sum");
-        sum.find("input").each(function(){
-            $(eventTarget).prop("disabled", true);
-        });
+        let sum = eventTarget.closest(".sum");
+        this.sumInputs(sum).forEach(input => { input.disabled = true });
 
         if (this.settings.showTime) {
             let currentTime = new Date();
@@ -150,28 +174,32 @@ class Sums{
             let roundingFactor = Math.pow(10, decimalPlaces - 1);
             let durationSeconds = Math.round((durationMs / 1000) * roundingFactor) / roundingFactor;
 
-            sum.find(".duration").text(durationSeconds + "s");
+            let durationElement = sum.getElementsByClassName("duration")[0];
+            durationElement.innerHTML = durationSeconds + "s";
         }
 
+        let answerElement = sum.getElementsByClassName("answer")[0];
         if (answer == this.currentSum.answer) {
-            sum.addClass("correct");
-            sum.find(".answer").html(this.getRandomCorrectSymbol());
+            sum.className += " correct";
+            answerElement.innerHTML = this.getRandomCorrectSymbol();
             this.results.correct++;
         } else {
-            sum.addClass("incorrect");
-            sum.find(".answer").html(this.getRandomIncorrectSymbol());
-            sum.find(".correct-answer").html("Correct answer is " + this.currentSum.answer);
+            sum.className += " incorrect";
+            answerElement.innerHTML = this.getRandomIncorrectSymbol();
+            let correctAnswerElement = sum.getElementsByClassName("correct-answer")[0];
+            correctAnswerElement.innerHTML = "Correct answer is " + this.currentSum.answer;
             if (this.settings.showCorrectAnswer) {
-                sum.find(".correct-answer").show();
+                correctAnswerElement.style.display = "block";
             }
             this.results.incorrect++;
         }
-        sum.addClass("complete");
+
+        sum.className += " complete";
 
         this.title.update();
         this.nextSum();
 
-        new CompletedAnimation(sum.find(".answer")[0]).start();
+        new CompletedAnimation(answerElement).start();
     }
 
     getRandomCorrectSymbol(){
@@ -188,23 +216,23 @@ class Sums{
 
     showAnswer(event){
         let eventTarget = event.currentTarget;
-        let answer = $(eventTarget);
+        let answer = eventTarget;
         let sum = answer.closest(".sum");
-
-        if (sum.hasClass("complete")){
+        
+        if (sum.className.indexOf("complete") !== -1){
             return;
         }
 
-        answer.html("");
-        answer.removeClass("dont-know");
+        answer.innerHTML = "";
+        answer.className = answer.className.replace(/dont-know/, "");
         let theAnswer = this.currentSum.answer;
-        sum.addClass("skipped");
-        sum.addClass("complete");
-        sum.find("input").each(function() {
-            $(this).prop("disabled", true);
-            if (!$(this).prop("readonly")) {
-                $(this).val(theAnswer);
+        sum.className += " skipped complete";
+        let inputs = this.sumInputs(sum);
+        inputs.forEach(input => {
+            if (!input.readOnly) {
+                input.value = theAnswer;
             }
+            input.disabled = true;
         });
 
         this.results.skipped++;
@@ -213,11 +241,36 @@ class Sums{
     }
 
     clear() {
-        $(".sums .sum").each(function() { $(this).remove(); });
+        this.sumElements().forEach(sum => sum.remove());
         this.startTime = null;
     }
 
     count() {
-        return $(".sums .sum").length;
+        return this.sumElements().length;
+    }
+
+    sumsContainer() {
+        return document.getElementsByClassName("sums")[0];
+    }
+
+    sumElements() {
+        let sums = this.sumsContainer().getElementsByClassName("sum");
+        return this.toArray(sums);
+    }
+
+    sumInputs(sumElement) {
+        let inputs = sumElement.getElementsByTagName("input");
+        return this.toArray(inputs);
+    }
+
+    toArray(htmlCollection) {
+        let elements = [];
+
+        for (let index = 0; index < htmlCollection.length; index++) {
+            let sum = htmlCollection[index];
+            elements.push(sum);
+        }
+
+        return elements;
     }
 }

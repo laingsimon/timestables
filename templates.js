@@ -19,7 +19,8 @@ class Templates {
     }
 
     addSum(sum){
-        let template = $("#templates #sum").html();
+        let templateElement = document.querySelector("#templates #sum");
+        let template = templateElement.innerHTML;
         template = template.replace(/{first}/g, sum.first || "");
         template = template.replace(/{second}/g, sum.second || "");
         template = template.replace(/{equals}/g, sum.equals || "");
@@ -35,29 +36,37 @@ class Templates {
             template = template.replace(/class="equals/g, "readonly class=\"equals");
         }
 
-        let firstExistingSum = $(".sums .sum");
-        if (firstExistingSum.length === 0) {
-            $(".sums").append($(template));
+        let sumsElement = document.getElementsByClassName("sums")[0];
+        let sums = sumsElement.getElementsByClassName("sum");
+        let newSumElement = this.getElementFromHtml(template);
+        if (sums.length === 0) {
+            sumsElement.appendChild(newSumElement);
         } else {
-            $(template).insertBefore(firstExistingSum[0])
+            sumsElement.insertBefore(newSumElement, sums[0]);
         }
 
-        let newSum = $($(".sums .sum")[0]);
-        newSum.find("input").each(function(){
-            if (!$(this).prop("readonly")) {
-                $(this).focus();
+        let inputs = newSumElement.getElementsByTagName("input");
+        for (let index = 0; index < inputs.length; index++){
+            let input = inputs[index];
+            if (!input.readOnly){
+                input.focus();
             }
-        });
+        }
 
-        return newSum[0];
+        return newSumElement;
     }
 
     addTimesTableNumber(number, checked) {
-        let template = $("#templates #timestable").html();
+        let templatesElement = document.querySelector("#templates #timestable");
+        let template = templatesElement.innerHTML;
         template = template.replace(/{number}/g, number);
 
-        $(".tables .numbers").append($(template));
-        $(`.tables input[value='${number}']`).prop("checked", checked);
+        let tablesElement = document.getElementsByClassName("tables")[0];
+        let numbersElement = tablesElement.getElementsByClassName("numbers")[0];
+        let elementToAppend = this.getElementFromHtml(template);
+        numbersElement.appendChild(elementToAppend);
+        let inputElement = tablesElement.querySelectorAll(`input[value='${number}']`)[0];
+        inputElement.checked = checked;
     }
 
     addTimesTableNumbers() {
@@ -65,5 +74,12 @@ class Templates {
             let shouldBeChecked = this.settings.timesTables[number] || false;
             this.addTimesTableNumber(number, shouldBeChecked);
         }
+    }
+
+    getElementFromHtml(html) {
+        let holder = document.createElement("div");
+        holder.innerHTML = html;
+
+        return holder.children[0];
     }
 }

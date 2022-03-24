@@ -14,6 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 class Screen {
+    constructor() {
+        this.isFullScreen = false;
+
+        let fullScreenChanged = function() {
+            this.isFullScreen = document.fullscreenElement;
+        };
+
+        document.addEventListener('fullscreenchange', fullScreenChanged, false);
+        document.addEventListener('mozfullscreenchange', fullScreenChanged, false);
+        document.addEventListener('MSFullscreenChange', fullScreenChanged, false);
+        document.addEventListener('webkitfullscreenchange', fullScreenChanged, false);
+    }
+
     enterFullScreen() {
         let doc = window.document;
         let docEl = doc.documentElement;
@@ -24,6 +37,10 @@ class Screen {
     }
 
     exitFullScreen() {
+        if (!this.isFullScreen) {
+            return;
+        }
+
         let doc = window.document;
 
         let cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;

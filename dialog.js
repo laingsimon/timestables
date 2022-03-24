@@ -20,17 +20,30 @@ class OptionsDialog {
         this.title = title;
         this.screen = screen;
 
-        $(".tables .numbers").on("click", "input", this.updateTableOption.bind(this))
-        $(".chose-tables").click(this.showDialog.bind(this));
-        $(".dialog-start").click(this.start.bind(this));
-        $(".dialog-close").click(this.closeDialog.bind(this));
+        let onClick = function(event) {
+            if (event.target.tagName !== "INPUT") {
+                return;
+            }
+
+            this.updateTableOption({
+                currentTarget: event.target
+            });
+        };
+
+        let tablesElement = document.getElementsByClassName("tables")[0];
+        let numbersElement = tablesElement.getElementsByClassName("numbers")[0];
+        numbersElement.addEventListener("click", onClick.bind(this));
+
+        document.getElementsByClassName("chose-tables")[0].addEventListener("click", this.showDialog.bind(this));
+        document.getElementsByClassName("dialog-start")[0].addEventListener("click", this.start.bind(this));
+        document.getElementsByClassName("dialog-close")[0].addEventListener("click", this.closeDialog.bind(this));
     }
 
     updateTableOption(event) {
         let currentTarget = event.currentTarget;
 
-        let number = $(currentTarget).val();
-        if ($(currentTarget).prop("checked")){
+        let number = currentTarget.value;
+        if (currentTarget.checked){
             this.settings.timesTables[number] = true;
         } else {
             delete this.settings.timesTables[number];
@@ -44,39 +57,35 @@ class OptionsDialog {
     }
 
     showDialog() {
-        let tables = $(".tables");
-        let sums = $(".sums");
-        let choseTables = $(".chose-tables");
+        this.setChecked("show-correct-answer", this.settings.showCorrectAnswer);
+        this.setChecked("show-fullscreen", this.settings.showFullScreen);
+        this.setChecked("multiplication", this.settings.multiplication);
+        this.setChecked("division", this.settings.division);
+        this.setChecked("show-time", this.settings.showTime);
 
-        $(".show-correct-answer input").prop("checked", this.settings.showCorrectAnswer);
-        $(".show-fullscreen input").prop("checked", this.settings.showFullScreen);
-        $(".multiplication input").prop("checked", this.settings.multiplication);
-        $(".division input").prop("checked", this.settings.division);
-        $(".show-time input").prop("checked", this.settings.showTime);
-        tables.show();
-        sums.hide();
-        choseTables.hide();
-        $(".dialog-close").toggle(this.sums.count() >= 1);
+        document.getElementsByClassName("tables")[0].style.display = "initial";
+        document.getElementsByClassName("sums")[0].style.display = "none";
+        document.getElementsByClassName("chose-tables")[0].style.display = "none";
+
+        document.getElementsByClassName("dialog-close")[0].style.display = this.sums.count() >= 1
+         ? "initial"
+         : "none";
     }
 
     closeDialog() {
-        let tables = $(".tables");
-        let sums = $(".sums");
-        let choseTables = $(".chose-tables");
-
         if (!Object.keys(this.settings.timesTables).length) {
             alert("You must select at least one number");
             return;
         }
 
-        choseTables.show();
-        sums.show();
-        tables.hide();
-        this.settings.showCorrectAnswer = $(".show-correct-answer input").prop("checked");
-        this.settings.showFullScreen = $(".show-fullscreen input").prop("checked");
-        this.settings.multiplication = $(".multiplication input").prop("checked");
-        this.settings.division = $(".division input").prop("checked");
-        this.settings.showTime = $(".show-time input").prop("checked");
+        document.getElementsByClassName("chose-tables")[0].style.display = "initial";
+        document.getElementsByClassName("sums")[0].style.display = "initial";
+        document.getElementsByClassName("tables")[0].style.display = "none";
+        this.settings.showCorrectAnswer = this.isChecked("show-correct-answer");
+        this.settings.showFullScreen = this.isChecked("show-fullscreen");
+        this.settings.multiplication = this.isChecked("multiplication");
+        this.settings.division = this.isChecked("division");
+        this.settings.showTime = this.isChecked("show-time");
         this.settings.save();
         this.updateTableChoserText();
         this.sums.replaceFirstSum();
@@ -86,6 +95,18 @@ class OptionsDialog {
         } else {
             this.screen.exitFullScreen();
         }
+    }
+
+    setChecked(labelClassName, setting) {
+        let label = document.getElementsByClassName(labelClassName)[0];
+        let input = label.getElementsByTagName("input")[0];
+        input.checked = setting;
+    }
+
+    isChecked(labelClassName) {
+        let label = document.getElementsByClassName(labelClassName)[0];
+        let input = label.getElementsByTagName("input")[0];
+        return input.checked;
     }
 
     updateTableChoserText() {
@@ -104,7 +125,7 @@ class OptionsDialog {
             }
         });
 
-        $(".chose-tables").html("⚙ " + chosenTables);
+        document.getElementsByClassName("chose-tables")[0].innerHTML = "⚙ " + chosenTables;
     }
 
     shortenSelectedTables(selectedTables) {

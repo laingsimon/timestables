@@ -37,24 +37,31 @@ class Background {
     updateBackgrounds() {
         let updateBackground = this.updateBackground.bind(this);
 
-        $(".background").each(function() {
-            let element = $(this);
-            if (element.closest("#templates").length > 0) {
+        let backgrounds = document.getElementsByClassName("background");
+        for (let index = 0; index < backgrounds.length; index++) {
+            let element = backgrounds[index];
+            if (element.closest("#templates") != null) {
                 return;
             }
 
             updateBackground(element);
-        });
+        }
     }
 
     updateBackground(element) {
-        let backgroundOnce = element.data("background-once");
-        let backgroundFixed = element.data("background-fixed");
+        let backgroundFixed = element.getAttribute("data-background-fixed");
+        if (backgroundFixed === "null") {
+            backgroundFixed = null;
+        }
 
         if (backgroundFixed) {
             return;
         }
 
+        let backgroundOnce = element.getAttribute("data-background-once");
+        if (backgroundOnce === "null") {
+            backgroundOnce = null;
+        }
         let width = 60;
         let height = 30;
         let content = this.getContent(width, height);
@@ -80,8 +87,8 @@ class Background {
                    </svg>`;
         let encodedSvg = btoa(svg);
 
-        element.css("background-image", `url("data:image/svg+xml;base64,${encodedSvg}")`);
-        element.data("background-fixed", backgroundOnce);
+        element.style.backgroundImage = `url("data:image/svg+xml;base64,${encodedSvg}")`;
+        element.setAttribute("data-background-fixed", backgroundOnce);
     }
 
     getContent(width, height) {

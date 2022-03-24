@@ -15,13 +15,13 @@ limitations under the License.
 */
 class CompletedAnimation {
     constructor(element) {
-        this.html = $(element).html();
+        this.html = element.innerHTML;
         this.tick = 1;
         this.handle = null;
         this.maxTicks = 0;
         this.ghostElement = null;
         this.element = element;
-        this.fontSize = Number.parseInt($(element).css("font-size").replace(/px/g, ""));
+        this.fontSize = Number.parseInt(getComputedStyle(element).fontSize.replace(/px/g, ""));
         this.increasePerTick = 1;
 
         let rect = this.element.getClientRects()[0];
@@ -64,14 +64,14 @@ class CompletedAnimation {
 
         let opacityPercent = 1 - (this.tick / this.maxTicks);
 
-        $(this.ghostElement).css("font-size", this.fontSize + (this.increasePerTick * this.tick) + "px");
-        $(this.ghostElement).css("opacity", opacityPercent);
-        $(this.ghostElement).show();
+        this.ghostElement.style.fontSize = this.fontSize + (this.increasePerTick * this.tick) + "px";
+        this.ghostElement.style.opacity = opacityPercent;
+        this.ghostElement.style.display = "initial";
 
         let ghostRect = this.ghostElement.getClientRects()[0];
 
-        $(this.ghostElement).css("top", this.referenceRect.centreY - (ghostRect.width / 2));
-        $(this.ghostElement).css("left", this.referenceRect.centreX - (ghostRect.height / 2));
+        this.ghostElement.style.top = this.referenceRect.centreY - (ghostRect.width / 2) + "px";
+        this.ghostElement.style.left = this.referenceRect.centreX - (ghostRect.height / 2) + "px";
     }
 
     addGhostElement() {
@@ -85,7 +85,7 @@ class CompletedAnimation {
 
     removeGhostElement() {
         if (this.ghostElement) {
-            $(this.ghostElement).remove();
+            this.ghostElement.remove();
             this.ghostElement = null;
         }
     }

@@ -17,13 +17,16 @@ class Title {
     constructor(results, screen){
         this.results = results;
         this.screen = screen;
-        $(".enter-fullscreen").click(this.enterFullScreen.bind(this));
-        $(".exit-fullscreen").click(this.exitFullScreen.bind(this));
+
+        let enterFullScreen = document.getElementsByClassName("enter-fullscreen")[0];
+        let exitFullScreen = document.getElementsByClassName("exit-fullscreen")[0];
+        enterFullScreen.addEventListener("click", this.enterFullScreen.bind(this));
+        exitFullScreen.addEventListener("click", this.exitFullScreen.bind(this));
 
         let fullScreenChanged = function() {
             let isFullScreen = document.fullscreenElement;
-            $(".enter-fullscreen").toggle(!isFullScreen);
-            $(".exit-fullscreen").toggle(isFullScreen);
+            enterFullScreen.style.display = isFullScreen ? "none" : "initial";
+            exitFullScreen.style.display = isFullScreen ? "initial" : "none";
         };
 
         document.addEventListener('fullscreenchange', fullScreenChanged, false);
@@ -66,7 +69,7 @@ class Title {
             title = "Times tables";
         }
 
-        $(".title").html(title);
+        document.getElementsByClassName("title")[0].innerHTML = title;
         return;
     }
 
