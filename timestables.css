@@ -201,9 +201,9 @@ h3 label input {
     text-align: center;
 }
 
-.enter-fullscreen img,
-.exit-fullscreen img {
-    height: 20px;
-    vertical-align: baseline;
+.enter-fullscreen,
+.exit-fullscreen {
     cursor: pointer;
+    font-weight: initial;
+    display: none;
 }
