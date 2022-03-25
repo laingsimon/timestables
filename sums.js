@@ -179,10 +179,13 @@ class Sums{
         }
 
         let answerElement = sum.getElementsByClassName("answer")[0];
+        let wobble = false;
+        let repeat = 1;
         if (answer == this.currentSum.answer) {
             sum.className += " correct";
             answerElement.innerHTML = this.getRandomCorrectSymbol();
             this.results.correct++;
+            repeat = 3;
         } else {
             sum.className += " incorrect";
             answerElement.innerHTML = this.getRandomIncorrectSymbol();
@@ -192,6 +195,7 @@ class Sums{
                 correctAnswerElement.style.display = "block";
             }
             this.results.incorrect++;
+            wobble = true;
         }
 
         sum.className += " complete";
@@ -199,7 +203,7 @@ class Sums{
         this.title.update();
         this.nextSum();
 
-        new CompletedAnimation(answerElement).start();
+        new CompletedAnimation(answerElement, eventTarget, wobble).start(repeat);
     }
 
     getRandomCorrectSymbol(){
