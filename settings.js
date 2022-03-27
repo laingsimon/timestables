@@ -86,4 +86,12 @@ class Settings {
     set showTime(value) {
         this.settings.showTime = value;
     }
+
+    get disableAnimation(){
+        return this.settings.disableAnimation;
+    }
+
+    set disableAnimation(value) {
+        this.settings.disableAnimation = value;
+    }
 }

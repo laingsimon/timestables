@@ -62,6 +62,7 @@ class OptionsDialog {
         this.setChecked("multiplication", this.settings.multiplication);
         this.setChecked("division", this.settings.division);
         this.setChecked("show-time", this.settings.showTime);
+        this.setChecked("disable-animation", this.settings.disableAnimation);
 
         document.getElementsByClassName("tables")[0].style.display = "initial";
         document.getElementsByClassName("sums")[0].style.display = "none";
@@ -86,6 +87,7 @@ class OptionsDialog {
         this.settings.multiplication = this.isChecked("multiplication");
         this.settings.division = this.isChecked("division");
         this.settings.showTime = this.isChecked("show-time");
+        this.settings.disableAnimation = this.isChecked("disable-animation");
         this.settings.save();
         this.updateTableChoserText();
         this.sums.replaceFirstSum();

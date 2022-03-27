@@ -203,7 +203,9 @@ class Sums{
         this.title.update();
         this.nextSum();
 
-        new CompletedAnimation(answerElement, eventTarget, wobble).start(repeat);
+        if (!this.settings.disableAnimation) {
+            new CompletedAnimation(answerElement, eventTarget, wobble).start(repeat);
+        }
     }
 
     getRandomCorrectSymbol(){
