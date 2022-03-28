@@ -4,7 +4,6 @@ name: Deploy
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches:
       - main
@@ -75,14 +74,14 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern *.html
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.html"
 
       - name: Upload root html to blob storage
         uses: azure/CLI@v1
         if: ${{ env.branch_name == 'main' }}
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $web -s ./static_blobs
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.html"
 
       - name: Purge Azure CDN (deployment)
         uses: azure/CLI@v1
