@@ -1,29 +1,40 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Main - Deploy
+name: Deploy
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - 'feature/**'
 
+  pull_request:
+    branches:
+      - 'feature/**'
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: azure/login@v1
-        with: 
+        with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Normalise git variables
+        shell: bash
+        run: |
+          echo "branch_name=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
+
       - name: Resolve git variables
-        id: vars
         shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "commit_date=$(git show --no-patch --no-notes --pretty='%cd' "$GITHUB_SHA")" >> $GITHUB_ENV
-          echo "branch_name=$GITHUB_REF_NAME" >> $GITHUB_ENV
+          echo "deploy_dir=\$web/${{ env.branch_name }}" >> $GITHUB_ENV
+          echo "deploy_dir_relative=${{ env.branch_name }}" >> $GITHUB_ENV
+          echo "purge_dir=/${{ env.branch_name }}/*" >> $GITHUB_ENV
 
       - name: Replace git variables
         shell: bash
@@ -31,30 +42,48 @@ jobs:
           sed -i 's/{commitId}/${{ env.sha_short }}/g' index.html
           sed -i 's/{commitTime}/${{ env.commit_date }}/g' index.html
           sed -i 's/{branchName}/${{ env.branch_name }}/g' index.html
-        
-      - name: Upload html to blob storage
+
+      - name: Setup azure cli (install extensions without a prompt)
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s . --pattern *.html
+            az config set extension.use_dynamic_install=yes_without_prompt
+
+      - name: Delete deployment directory (if exists)
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web' --recursive
+
+      - name: Create deployment directory
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob directory create --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web'
+
       - name: Upload js to blob storage
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s . --pattern "*.js"
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.js"
       - name: Upload css to blob storage
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s . --pattern "*.css"
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.css"
+      - name: Upload html to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern *.html
 
       - name: Purge Azure CDN
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az cdn endpoint purge --content-paths "/*" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope" 
+            az cdn endpoint purge --content-paths $purge_dir --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
       - name: logout
         run: |
           az logout
         if: always()
-        
+
