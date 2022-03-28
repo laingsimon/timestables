@@ -86,6 +86,11 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.png"
+      - name: Upload manifest
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.webmanifest"
       - name: Upload html
         uses: azure/CLI@v1
         with:
