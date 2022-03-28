@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
-          echo "commit_date=$(git show --no-patch --no-notes --pretty='%cd' "$GITHUB_SHA")" >> $GITHUB_ENV
+          echo "commit_date=$(git show --no-patch --no-notes --date=format:'%d-%b %Y %H:%M' --pretty='%cd' "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "branch_name=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
 
       - name: Resolve deployment variables
