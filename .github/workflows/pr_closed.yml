@@ -19,11 +19,17 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Resolve deployment variables
+      - name: Resolve deployment variables from pr
         shell: bash
         if: ${{ github.event.inputs.deployment_dir == '' }}
         run: |
           echo "deployment_dir=${{ github.event.pull_request.number }}_merge" >> $GITHUB_ENV
+
+      - name: Use given deployment directory
+        shell: bash
+        if: ${{ github.event.inputs.deployment_dir != '' }}
+        run: |
+          echo "deployment_dir=${{ github.event.inputs.deployment_dir }}" >> $GITHUB_ENV
 
       - name: Resolve deployment variables
         shell: bash
