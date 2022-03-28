@@ -1,6 +1,13 @@
 name: Remove deployment
 
 on:
+  workflow_dispatch:
+    inputs:
+      deployment_dir:
+        description: 'Deployment directory'
+        require: true
+        type: string
+        default: ''
   pull_request:
     types: [closed]
 jobs:
@@ -14,8 +21,14 @@ jobs:
 
       - name: Resolve deployment variables
         shell: bash
+        if: ${{ github.event.inputs.deployment_dir == '' }}
         run: |
-          echo "deploy_dir_relative=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
+          echo "deployment_dir=${{ github.event.pull_request.number }}_merge" >> $GITHUB_ENV
+
+      - name: Resolve deployment variables
+        shell: bash
+        run: |
+          echo "deploy_dir_relative=${{ env.deployment_dir }}" >> $GITHUB_ENV
 
       - name: Setup azure cli (install extensions without a prompt)
         uses: azure/CLI@v1
