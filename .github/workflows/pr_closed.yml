@@ -1,0 +1,37 @@
+name: Remove deployment
+
+on:
+  pull_request:
+    types: [closed]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Resolve deployment variables
+        shell: bash
+        run: |
+          echo "deploy_dir_relative=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
+
+      - name: Setup azure cli (install extensions without a prompt)
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az config set extension.use_dynamic_install=yes_without_prompt
+
+      - name: Delete current deployment directory
+        uses: azure/CLI@v1
+        if: ${{ env.branch_name != 'main' }}
+        with:
+          inlineScript: |
+            az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web' --recursive
+
+      - name: logout
+        run: |
+          az logout
+        if: always()
+
