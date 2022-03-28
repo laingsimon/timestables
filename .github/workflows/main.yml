@@ -116,6 +116,19 @@ jobs:
           inlineScript: |
             az cdn endpoint purge --content-paths "/index.html" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
 
+      - name: Add comment to PR with testing link
+        if: ${{ env.branch_name != 'main' }}
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'The changes are visible here: https://app.timestables.xyz/${{ env.deploy_dir_relative }}/'
+            })
+
       - name: logout
         run: |
           az logout
