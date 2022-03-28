@@ -1,0 +1,15 @@
+{
+  "background_color": "grey",
+  "description": "Timestables application",
+  "display": "fullscreen",
+  "icons": [
+    {
+      "src": "timestables.png",
+      "sizes": "90x90",
+      "type": "image/png"
+    }
+  ],
+  "name": "Timestables",
+  "short_name": "Timestables",
+  "start_url": "/"
+}

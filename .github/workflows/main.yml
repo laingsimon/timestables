@@ -65,7 +65,6 @@ jobs:
         with:
           inlineScript: |
             az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web' --recursive
-
       - name: Create deployment directory
         uses: azure/CLI@v1
         with:
@@ -82,12 +81,16 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.css"
+      - name: Upload images
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.png"
       - name: Upload html
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.html"
-
       - name: Upload redirect html to blob storage
         uses: azure/CLI@v1
         if: ${{ env.branch_name == 'main' }}
@@ -101,7 +104,6 @@ jobs:
         with:
           inlineScript: |
             az cdn endpoint purge --content-paths $purge_dir --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
-
       - name: Purge redirect CDN cache
         uses: azure/CLI@v1
         if: ${{ env.branch_name == 'main' }}
