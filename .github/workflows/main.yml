@@ -126,7 +126,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'The changes are visible here: https://app.timestables.xyz/${{ env.deploy_dir_relative }}/index.html'
+              body: 'The changes are visible here: https://app.timestables.xyz/${{ env.deploy_dir_relative }}/'
             })
 
       - name: logout
