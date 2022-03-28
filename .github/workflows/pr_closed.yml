@@ -25,7 +25,7 @@ jobs:
 
       - name: Delete current deployment directory
         uses: azure/CLI@v1
-        if: ${{ env.branch_name != 'main' }}
+        if: ${{ env.deploy_dir_relative != 'main' }}
         with:
           inlineScript: |
             az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web' --recursive
