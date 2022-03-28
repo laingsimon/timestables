@@ -9,8 +9,7 @@ on:
       - main
 
   pull_request:
-    branches:
-      - 'feature/**'
+    types: [opened, reopened,review_requested]
 
 jobs:
   build:
@@ -21,26 +20,36 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Normalise git variables
-        shell: bash
-        run: |
-          echo "branch_name=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
-
-      - name: Resolve git variables
+      - name: Resolve core git variables
         shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "commit_date=$(git show --no-patch --no-notes --pretty='%cd' "$GITHUB_SHA")" >> $GITHUB_ENV
+          echo "branch_name=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
+
+      - name: Resolve git variables (main)
+        shell: bash
+        if: ${{ env.branch_name == 'main' }}
+        run: |
+          echo "deploy_dir=\$web/${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
+          echo "deploy_dir_relative=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
+          echo "purge_dir=/${{ env.branch_name }}.${{ env.sha_short }}/*" >> $GITHUB_ENV
+
+      - name: Resolve git variables (PRs, etc)
+        shell: bash
+        if: ${{ env.branch_name != 'main' }}
+        run: |
           echo "deploy_dir=\$web/${{ env.branch_name }}" >> $GITHUB_ENV
           echo "deploy_dir_relative=${{ env.branch_name }}" >> $GITHUB_ENV
           echo "purge_dir=/${{ env.branch_name }}/*" >> $GITHUB_ENV
 
-      - name: Replace git variables
+      - name: Supplant git variables
         shell: bash
         run: |
           sed -i 's/{commitId}/${{ env.sha_short }}/g' index.html
           sed -i 's/{commitTime}/${{ env.commit_date }}/g' index.html
           sed -i 's/{branchName}/${{ env.branch_name }}/g' index.html
+          sed -i 's/{deployDir}/${{ env.deploy_dir_relative }}/g' ./static_blobs/index.html
 
       - name: Setup azure cli (install extensions without a prompt)
         uses: azure/CLI@v1
@@ -50,6 +59,7 @@ jobs:
 
       - name: Delete deployment directory (if exists)
         uses: azure/CLI@v1
+        if: ${{ env.branch_name != 'main' }}
         with:
           inlineScript: |
             az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web' --recursive
@@ -76,7 +86,7 @@ jobs:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.html"
 
-      - name: Upload root html to blob storage
+      - name: Upload root html to blob storage (main)
         uses: azure/CLI@v1
         if: ${{ env.branch_name == 'main' }}
         with:
