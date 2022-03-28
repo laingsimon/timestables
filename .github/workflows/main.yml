@@ -81,11 +81,6 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.png"
-      - name: Upload manifest
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.webmanifest"
       - name: Upload html
         uses: azure/CLI@v1
         with:
@@ -97,6 +92,12 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.html"
+      - name: Upload manifest to blob storage
+        uses: azure/CLI@v1
+        if: ${{ env.branch_name == 'main' }}
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.json"
 
       - name: Purge deployment CDN cache
         uses: azure/CLI@v1
@@ -110,6 +111,12 @@ jobs:
         with:
           inlineScript: |
             az cdn endpoint purge --content-paths "/index.html" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
+      - name: Purge manifest CDN cache
+        uses: azure/CLI@v1
+        if: ${{ env.branch_name == 'main' }}
+        with:
+          inlineScript: |
+            az cdn endpoint purge --content-paths "/manifest.json" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
 
       - name: Add comment to PR with testing link
         if: ${{ env.branch_name != 'main' }}
