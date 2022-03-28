@@ -42,7 +42,7 @@ jobs:
         if: ${{ env.branch_name != 'main' }}
         run: |
           echo "deploy_dir=\$web/${{ env.branch_name }}" >> $GITHUB_ENV
-          echo "deploy_dir_relative=${{ env.branch_name }}/" >> $GITHUB_ENV
+          echo "deploy_dir_relative=${{ env.branch_name }}" >> $GITHUB_ENV
           echo "purge_dir=/${{ env.branch_name }}/*" >> $GITHUB_ENV
 
       - name: Supplant variables
@@ -65,11 +65,6 @@ jobs:
         with:
           inlineScript: |
             az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web' --recursive
-      - name: Create deployment directory
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az storage blob directory create --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web'
 
       - name: Upload js
         uses: azure/CLI@v1
