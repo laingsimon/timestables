@@ -2,7 +2,7 @@
   "theme_color": "#cccccc",
   "background_color": "#cccccc",
   "description": "Timestables application",
-  "display": "fullscreen",
+  "display": "standalone",
   "icons": [
     {
       "src": "timestables.png",
