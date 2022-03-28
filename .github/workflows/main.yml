@@ -5,7 +5,7 @@ on:
     inputs:
       purge_cache:
         description: 'Should the CDN cache be purged?'
-        require: false
+        require: true
         type: boolean
         default: false
   push:
