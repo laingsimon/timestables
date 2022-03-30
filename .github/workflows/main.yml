@@ -159,5 +159,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'The changes have been deployed to [/${{ env.branch_name }}](https://app.timestables.xyz/${{ env.branch_name }}/) (sha: ${{ env.sha_short }})'
+              body: 'The changes have been deployed to [/${{ env.branch_name }}](https://app.timestables.xyz/${{ env.branch_name }}/)'
             })
