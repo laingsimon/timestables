@@ -46,7 +46,7 @@ jobs:
           echo "deploy_dir_relative_regex_safe=" >> $GITHUB_ENV
           echo "deploy_dir_name=" >> $GITHUB_ENV
           echo "app_deploy_dir_relative_regex_safe=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
-          echo "purge_dir=/${{ env.branch_name }}/*" >> $GITHUB_ENV
+          echo "purge_dir=/${{ env.branch_name }}.${{ env.sha_short }}/*" >> $GITHUB_ENV
       - name: Resolve deployment paths (Prs)
         shell: bash
         if: ${{ env.branch_name != 'main' }}
