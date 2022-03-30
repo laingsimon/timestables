@@ -23,5 +23,5 @@
   ],
   "name": "Timestables",
   "short_name": "Timestables",
-  "start_url": "https://app.timestables.xyz{deployDir}/"
+  "start_url": "https://app.timestables.xyz/"
 }
