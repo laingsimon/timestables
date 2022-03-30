@@ -151,7 +151,7 @@ jobs:
           echo "${{ toJSON(github) }}"
 
       - name: Add comment to PR with testing link
-        if: ${{ env.branch_name != 'main' }}
+        if: ${{ env.branch_name != 'main' && github.event.action != 'synchronize' }}
         uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
