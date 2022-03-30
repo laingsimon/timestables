@@ -77,28 +77,30 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.css"
-      - name: Upload images
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.png"
       - name: Upload html
         uses: azure/CLI@v1
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.html"
-      - name: Upload redirect html to blob storage
-        uses: azure/CLI@v1
-        if: ${{ env.branch_name == 'main' }}
-        with:
-          inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.html"
-      - name: Upload manifest to blob storage
+
+      - name: Upload manifest
         uses: azure/CLI@v1
         if: ${{ env.branch_name == 'main' }}
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.json"
+      - name: Upload static images
+        uses: azure/CLI@v1
+        if: ${{ env.branch_name == 'main' }}
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.png"
+      - name: Upload static html
+        uses: azure/CLI@v1
+        if: ${{ env.branch_name == 'main' }}
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.html"
 
       - name: Purge deployment CDN cache
         uses: azure/CLI@v1
