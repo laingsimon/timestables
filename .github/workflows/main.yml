@@ -29,21 +29,38 @@ jobs:
           echo "commit_date=$(git show --no-patch --no-notes --date=format:'%d-%b %Y %H:%M' --pretty='%cd' "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "branch_name=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
 
-      - name: Resolve deployment variables
+## variables (main | other-branches)
+# deploy_dir_name                     '' | 30_merge
+# app_deploy_dir                      $web/main.xxxx | $web/30_merge/app
+# deploy_dir_relative_regex_safe      '' | \/30_merge
+# app_deploy_dir_relative_regex_safe  main.xxxx | 30_merge\/app
+# ------ can be resolved from the above> --------
+# deploy_dir                          $web | $web/30_merge
+# purge_dir                           /main.xxxx/* | /30_merge/*
+
+      - name: Resolve deployment paths (main)
         shell: bash
         if: ${{ env.branch_name == 'main' }}
         run: |
-          echo "deploy_dir=\$web/${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
-          echo "deploy_dir_relative=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
-          echo "purge_dir=/${{ env.branch_name }}.${{ env.sha_short }}/*" >> $GITHUB_ENV
-
-      - name: Resolve deployment variables
+          echo "deploy_dir=\$web" >> $GITHUB_ENV
+          echo "app_deploy_dir=\$web/${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
+          echo "deploy_dir_relative_regex_safe=" >> $GITHUB_ENV
+          echo "deploy_dir_name=" >> $GITHUB_ENV
+          echo "app_deploy_dir_relative_regex_safe=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
+      - name: Resolve deployment paths (Prs)
         shell: bash
         if: ${{ env.branch_name != 'main' }}
         run: |
           echo "deploy_dir=\$web/${{ env.branch_name }}" >> $GITHUB_ENV
-          echo "deploy_dir_relative=${{ env.branch_name }}" >> $GITHUB_ENV
-          echo "purge_dir=/${{ env.branch_name }}/*" >> $GITHUB_ENV
+          echo "app_deploy_dir=\$web/${{ env.branch_name }}/app" >> $GITHUB_ENV
+          echo "deploy_dir_name=${{ env.branch_name }}" >> $GITHUB_ENV
+          echo "deploy_dir_relative_regex_safe=\/${{ env.branch_name }}" >> $GITHUB_ENV
+          echo "app_deploy_dir_relative_regex_safe=${{ env.branch_name }}\/app" >> $GITHUB_ENV
+      - name: Resolve deployment paths (common)
+        shell: bash
+        run: |
+          echo "deploy_dir=\$web/${{ env.deploy_dir_name }}" >> $GITHUB_ENV
+          echo "purge_dir=/${{ env.deploy_dir_name }}/*" >> $GITHUB_ENV
 
       - name: Supplant variables
         shell: bash
@@ -51,8 +68,14 @@ jobs:
           sed -i 's/{commitId}/${{ env.sha_short }}/g' index.html
           sed -i 's/{commitTime}/${{ env.commit_date }}/g' index.html
           sed -i 's/{branchName}/${{ env.branch_name }}/g' index.html
-          sed -i 's/{deployDir}/${{ env.deploy_dir_relative }}/g' ./static_blobs/index.html
-          sed -i 's/{deployDir}/${{ env.deploy_dir_relative }}/g' ./static_blobs/error.html
+          sed -i 's/{appDeployDir}/${{ env.app_deploy_dir_relative_regex_safe }}/g' ./static_blobs/index.html
+          sed -i 's/{appDeployDir}/${{ env.app_deploy_dir_relative_regex_safe }}/g' ./static_blobs/error.html
+          sed -i 's/{appDeployDir}/${{ env.app_deploy_dir_relative_regex_safe }}/g' index.html
+          sed -i 's/{appDeployDir}/${{ env.app_deploy_dir_relative_regex_safe }}/g' manifest.json
+          sed -i 's/{deployDir}/${{ env.deploy_dir_relative_regex_safe }}/g' ./static_blobs/index.html
+          sed -i 's/{deployDir}/${{ env.deploy_dir_relative_regex_safe }}/g' ./static_blobs/error.html
+          sed -i 's/{deployDir}/${{ env.deploy_dir_relative_regex_safe }}/g' index.html
+          sed -i 's/{deployDir}/${{ env.deploy_dir_relative_regex_safe }}/g' manifest.json
 
       - name: Setup azure cli (install extensions without a prompt)
         uses: azure/CLI@v1
@@ -65,42 +88,29 @@ jobs:
         if: ${{ env.branch_name != 'main' }}
         with:
           inlineScript: |
-            az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_relative -c '$web' --recursive
+            az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_name -c '$web' --recursive
 
       - name: Upload js
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.js"
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $app_deploy_dir -s . --pattern "*.js*"
       - name: Upload css
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.css"
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $app_deploy_dir -s . --pattern "*.css"
       - name: Upload html
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s . --pattern "*.html"
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $app_deploy_dir -s . --pattern "*.html"
 
-      - name: Upload manifest
+      - name: Upload static content
         uses: azure/CLI@v1
-        if: ${{ env.branch_name == 'main' }}
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.json"
-      - name: Upload static images
-        uses: azure/CLI@v1
-        if: ${{ env.branch_name == 'main' }}
-        with:
-          inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.png"
-      - name: Upload static html
-        uses: azure/CLI@v1
-        if: ${{ env.branch_name == 'main' }}
-        with:
-          inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.html"
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s './static_blobs'
 
       - name: Purge deployment CDN cache
         uses: azure/CLI@v1
@@ -114,12 +124,18 @@ jobs:
         with:
           inlineScript: |
             az cdn endpoint purge --content-paths "/index.html" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
+      - name: Purge error file cache
+        uses: azure/CLI@v1
+        if: ${{ env.branch_name == 'main' }}
+        with:
+          inlineScript: |
+            az cdn endpoint purge --content-paths "/error.html" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
       - name: Purge manifest CDN cache
         uses: azure/CLI@v1
         if: ${{ env.branch_name == 'main' }}
         with:
           inlineScript: |
-            az cdn endpoint purge --content-paths "/manifest.json" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
+            az cdn endpoint purge --content-paths "/service-worker.js" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
 
       - name: Add comment to PR with testing link
         if: ${{ env.branch_name != 'main' }}
@@ -131,7 +147,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'The changes are visible here: https://app.timestables.xyz/${{ env.deploy_dir_relative }}/ (sha: ${{ env.sha_short }})'
+              body: 'The changes are visible here: https://app.timestables.xyz/${{ env.deploy_dir_name }}/ (sha: ${{ env.sha_short }})'
             })
 
       - name: logout
