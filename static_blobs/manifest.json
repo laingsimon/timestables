@@ -23,5 +23,6 @@
   ],
   "name": "Timestables",
   "short_name": "Timestables",
-  "start_url": "https://app.timestables.xyz/"
+  "start_url": "https://app.timestables.xyz/",
+  "scope": "/"
 }

@@ -95,6 +95,12 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.png"
+      - name: Upload static js
+        uses: azure/CLI@v1
+        if: ${{ env.branch_name == 'main' }}
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d '$web' -s './static_blobs' --pattern "*.js"
       - name: Upload static html
         uses: azure/CLI@v1
         if: ${{ env.branch_name == 'main' }}
