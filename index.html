@@ -99,7 +99,7 @@ limitations under the License.
         <!-- https://blog.betapage.co/how-to-add-add-to-homescreen-popup-in-web-app-99d5237fabff -->
         <script>
             if ('serviceWorker' in navigator) {
-               navigator.serviceWorker.register('{staticDir}/service-worker.js')
+               navigator.serviceWorker.register('service-worker.js')
                  .then(function(reg){
                    console.log("Service worker installed");
                 }).catch(function(err) {
