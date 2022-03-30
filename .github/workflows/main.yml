@@ -36,6 +36,7 @@ jobs:
           echo "deploy_dir=\$web/${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
           echo "deploy_dir_relative=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
           echo "purge_dir=/${{ env.branch_name }}.${{ env.sha_short }}/*" >> $GITHUB_ENV
+          echo "static_dir=" >> $GITHUB_ENV
 
       - name: Resolve deployment variables
         shell: bash
@@ -44,6 +45,7 @@ jobs:
           echo "deploy_dir=\$web/${{ env.branch_name }}" >> $GITHUB_ENV
           echo "deploy_dir_relative=${{ env.branch_name }}" >> $GITHUB_ENV
           echo "purge_dir=/${{ env.branch_name }}/*" >> $GITHUB_ENV
+          echo "static_dir=\/${{ env.branch_name }}\/static_blobs" >> $GITHUB_ENV
 
       - name: Supplant variables
         shell: bash
@@ -51,6 +53,7 @@ jobs:
           sed -i 's/{commitId}/${{ env.sha_short }}/g' index.html
           sed -i 's/{commitTime}/${{ env.commit_date }}/g' index.html
           sed -i 's/{branchName}/${{ env.branch_name }}/g' index.html
+          sed -i 's/{staticDir}/${{ env.static_dir }}/g' index.html
           sed -i 's/{deployDir}/${{ env.deploy_dir_relative }}/g' ./static_blobs/index.html
           sed -i 's/{deployDir}/${{ env.deploy_dir_relative }}/g' ./static_blobs/error.html
 
