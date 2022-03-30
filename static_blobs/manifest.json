@@ -1,26 +1,27 @@
 {
+  "id": "Timestables",
   "theme_color": "#cccccc",
   "background_color": "#cccccc",
   "description": "Timestables application",
   "display": "fullscreen",
   "icons": [
     {
-      "src": "timestables90.png",
+      "src": "/timestables90.png",
       "sizes": "90x90",
       "type": "image/png"
     },
     {
-      "src": "timestables192.png",
+      "src": "/timestables192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "timestables512.png",
+      "src": "/timestables512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
   "name": "Timestables",
   "short_name": "Timestables",
-  "start_url": "/"
+  "start_url": "https://app.timestables.xyz/"
 }
