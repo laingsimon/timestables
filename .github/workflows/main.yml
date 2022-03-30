@@ -148,7 +148,6 @@ jobs:
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "branch_name=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
-          echo "${{ toJSON(github) }}"
 
       - name: Add comment to PR with testing link
         if: ${{ env.branch_name != 'main' && github.event.action != 'synchronize' }}
@@ -160,5 +159,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'The changes have been deployed to [/${{ env.branch_name }}](https://app.timestables.xyz/${{ env.branch_name }}/) (sha: ${{ env.sha_short }})'
+              body: 'The changes have been deployed to [/${{ env.branch_name }}](https://app.timestables.xyz/${{ env.branch_name }}/)'
             })
