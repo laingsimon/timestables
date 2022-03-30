@@ -14,7 +14,7 @@ on:
   pull_request:
     types: [opened,reopened,synchronize]
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -133,6 +133,14 @@ jobs:
           inlineScript: |
             az cdn endpoint purge --content-paths "/service-worker.js" --profile-name "TimestablesappCDN" --name "timestablesapp" --resource-group "Default-Storage-WestEurope"
 
+      - name: logout
+        run: |
+          az logout
+        if: always()
+
+  add_comment:
+    runs-on: ubuntu-latest
+    steps:
       - name: Add comment to PR with testing link
         if: ${{ env.branch_name != 'main' }}
         uses: actions/github-script@v3
@@ -145,9 +153,3 @@ jobs:
               repo: context.repo.repo,
               body: 'The changes are visible here: https://app.timestables.xyz/${{ env.deploy_dir_name }}/ (sha: ${{ env.sha_short }})'
             })
-
-      - name: logout
-        run: |
-          az logout
-        if: always()
-
