@@ -94,17 +94,17 @@ jobs:
         continue-on-error: true
         with:
           inlineScript: |
-            az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ env.TEMP_DIR }}/versions --name $versions_path
+            az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file $GITHUB_WORKSPACE/versions --name $versions_path
       - name: Update versions
         shell: bash
         run: |
-           echo '${{ env.deploy_dir_relative_regex_safe }}' >> ${{ env.TEMP_DIR }}/versions
-           cat ${{ env.TEMP_DIR }}/versions
+           echo '${{ env.deploy_dir_relative_regex_safe }}' >> $GITHUB_WORKSPACE/versions
+           cat $GITHUB_WORKSPACE/versions
       - name: Upload versions
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ env.TEMP_DIR }}/versions --name $versions_path
+            az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file $GITHUB_WORKSPACE/versions --name $versions_path
 
       - name: Upload js
         uses: azure/CLI@v1
