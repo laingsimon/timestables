@@ -98,7 +98,6 @@ jobs:
       - name: Update versions
         shell: bash
         run: |
-           cat versions
            echo '${{ env.deploy_dir_relative_regex_safe }}' >> versions
            cat versions
       - name: Upload versions
