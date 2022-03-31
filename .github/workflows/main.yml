@@ -91,6 +91,7 @@ jobs:
 
       - name: Download versions
         uses: azure/CLI@v1
+        continue-on-error: true
         with:
           inlineScript: |
             az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file versions --name $versions_path
