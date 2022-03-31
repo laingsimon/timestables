@@ -37,6 +37,7 @@ jobs:
 # app_deploy_dir_relative_regex_safe  main.xxxx       | 30_merge\/app
 # purge_dir                           /main.xxxx/*    | /30_merge/*
 # versions_path                       versions        | 30_merge/versions
+# version                             main.xxxx       | 30_merge
 
       - name: Resolve deployment paths (main)
         shell: bash
@@ -49,6 +50,7 @@ jobs:
           echo "app_deploy_dir_relative_regex_safe=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
           echo "purge_dir=/${{ env.branch_name }}.${{ env.sha_short }}/*" >> $GITHUB_ENV
           echo "versions_path=versions" >> $GITHUB_ENV
+          echo "version=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
       - name: Resolve deployment paths (Prs)
         shell: bash
         if: ${{ env.branch_name != 'main' }}
@@ -60,6 +62,7 @@ jobs:
           echo "app_deploy_dir_relative_regex_safe=${{ env.branch_name }}\/app" >> $GITHUB_ENV
           echo "purge_dir=/${{ env.deploy_dir_name }}/*" >> $GITHUB_ENV
           echo "versions_path=${{ env.deploy_dir_name }}versions" >> $GITHUB_ENV
+          echo "version=/${{ env.branch_name }}" >> $GITHUB_ENV
 
       - name: Supplant variables
         shell: bash
@@ -120,7 +123,7 @@ jobs:
       - name: Update versions
         shell: bash
         run: |
-           echo '${{ env.deploy_dir_relative_regex_safe }}' >> $RUNNER_TEMP/tmp_versions
+           echo '${{ env.version }}' >> $RUNNER_TEMP/tmp_versions
            cat $RUNNER_TEMP/tmp_versions
       - name: Upload versions
         uses: azure/CLI@v1
