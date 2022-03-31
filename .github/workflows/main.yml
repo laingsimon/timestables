@@ -28,6 +28,7 @@ jobs:
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "commit_date=$(git show --no-patch --no-notes --date=format:'%d-%b %Y %H:%M' --pretty='%cd' "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "branch_name=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
+          echo "temp_version_path=$RUNNER_TEMP/versions" >> $GITHUB_ENV
 
 ## variables (main | other-branches)
 # deploy_dir_name                     ''              | 30_merge
@@ -119,17 +120,17 @@ jobs:
         continue-on-error: true
         with:
           inlineScript: |
-            az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file $RUNNER_TEMP/tmp_versions --name $versions_path
+            az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file $temp_version_path --name $versions_path
       - name: Update versions
         shell: bash
         run: |
-           echo '${{ env.version }}' >> $RUNNER_TEMP/tmp_versions
-           cat $RUNNER_TEMP/tmp_versions
+           echo '${{ env.version }}' >> ${{ env.temp_version_path }}
+           cat ${{ env.temp_version_path }}
       - name: Upload versions
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file $RUNNER_TEMP/tmp_versions --name $versions_path
+            az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file $temp_version_path --name $versions_path
 
       - name: Purge deployment CDN cache
         uses: azure/CLI@v1
