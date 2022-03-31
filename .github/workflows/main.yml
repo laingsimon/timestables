@@ -89,23 +89,6 @@ jobs:
           inlineScript: |
             az storage blob directory delete --account-name "timestablesapp" --auth-mode key -d $deploy_dir_name -c '$web' --recursive
 
-      - name: Download versions
-        uses: azure/CLI@v1
-        continue-on-error: true
-        with:
-          inlineScript: |
-            az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file $RUNNER_TEMP/versions --name $versions_path
-      - name: Update versions
-        shell: bash
-        run: |
-           echo '${{ env.deploy_dir_relative_regex_safe }}' >> $RUNNER_TEMP/versions
-           cat $RUNNER_TEMP/versions
-      - name: Upload versions
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file $RUNNER_TEMP/versions --name $versions_path
-
       - name: Upload js
         uses: azure/CLI@v1
         with:
@@ -127,6 +110,23 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s './static_blobs'
+
+      - name: Download versions
+        uses: azure/CLI@v1
+        continue-on-error: true
+        with:
+          inlineScript: |
+            az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file $RUNNER_TEMP/versions --name $versions_path
+      - name: Update versions
+        shell: bash
+        run: |
+           echo '${{ env.deploy_dir_relative_regex_safe }}' >> $RUNNER_TEMP/versions
+           cat $RUNNER_TEMP/versions
+      - name: Upload versions
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file $RUNNER_TEMP/versions --name $versions_path
 
       - name: Purge deployment CDN cache
         uses: azure/CLI@v1
