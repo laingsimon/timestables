@@ -37,6 +37,19 @@ class OptionsDialog {
         document.getElementsByClassName("chose-tables")[0].addEventListener("click", this.showDialog.bind(this));
         document.getElementsByClassName("dialog-start")[0].addEventListener("click", this.start.bind(this));
         document.getElementsByClassName("dialog-close")[0].addEventListener("click", this.closeDialog.bind(this));
+
+        if (this.runningAsAnApp()) {
+            let fullScreenLabel = document.getElementsByClassName("show-fullscreen")[0];
+            fullScreenLabel.style.display = "none";
+        }
+    }
+
+    runningAsAnApp() {
+        if (window.matchMedia('(display-mode: fullscreen)').matches) {
+            return true;
+        }
+
+        return false;
     }
 
     updateTableOption(event) {
