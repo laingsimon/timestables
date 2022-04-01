@@ -95,7 +95,7 @@ jobs:
 
       - name: Download versions
 # don't use the azure/CLI version here, it runs in a container which is cleared up after each step meaning the files can be accessed in the second step
-        continue-on-error: true. # the file may not exist, if it doesn't then the deployment can continue, a file with this version number alone will be created
+        continue-on-error: true # the file may not exist, if it doesn't then the deployment can continue, a file with this version number alone will be created
         run: |
           az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ env.temp_version_path }} --name ${{ env.versions_path }}
       - name: Upload versions
