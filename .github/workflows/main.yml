@@ -103,7 +103,7 @@ jobs:
         run: |
           echo '${{ env.version }}' >> ${{ env.temp_version_path }}
           cat ${{ env.temp_version_path }}
-          az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ env.temp_version_path }} --name ${{ env.versions_path }}
+          az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ env.temp_version_path }} --name ${{ env.versions_path }} --overwrite
 
 
       - name: Upload js
