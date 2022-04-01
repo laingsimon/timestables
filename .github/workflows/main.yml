@@ -61,7 +61,7 @@ jobs:
           echo "deploy_dir_name=" >> $GITHUB_ENV
           echo "app_deploy_dir_relative_regex_safe=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
           echo "purge_dir=/${{ env.branch_name }}.${{ env.sha_short }}/*" >> $GITHUB_ENV
-          echo "versions_path=/versions" >> $GITHUB_ENV
+          echo "versions_path=versions" >> $GITHUB_ENV
           echo "version=${{ env.branch_name }}.${{ env.sha_short }}" >> $GITHUB_ENV
       - name: Resolve deployment paths (Prs)
         shell: bash
@@ -73,7 +73,7 @@ jobs:
           echo "deploy_dir_relative_regex_safe=\/${{ env.branch_name }}" >> $GITHUB_ENV
           echo "app_deploy_dir_relative_regex_safe=${{ env.branch_name }}\/app" >> $GITHUB_ENV
           echo "purge_dir=/${{ github.event.inputs.deployment_dir }}/*" >> $GITHUB_ENV
-          echo "versions_path=/${{ env.branch_name }}/versions" >> $GITHUB_ENV
+          echo "versions_path=${{ env.branch_name }}/versions" >> $GITHUB_ENV
           echo "version=${{ env.branch_name }}" >> $GITHUB_ENV
 
       - name: Supplant variables
