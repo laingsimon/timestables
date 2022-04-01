@@ -31,15 +31,11 @@ class Version {
         }
 
         let versions = text.trim().split('\n');
-        console.log(`Latest deployed versions: ${versions}`);
-
         if (versions.length == 0) {
             return;
         }
 
         let latestVersion = versions[versions.length - 1];
-        console.log(`Latest deployed version: ${latestVersion} of ${versions.length} versions`);
-
         let currentVersionUrl = document.location.href.toString();
         let latestVersionUrl = `${this.baseUrl}/${latestVersion}/app/`;
         console.log(`Current version: ${currentVersionUrl}, latest version: ${latestVersionUrl}`);
