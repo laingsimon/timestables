@@ -39,7 +39,8 @@ class Settings {
             fullscreen: true,
             multiplication: true,
             division: false,
-            showTime: true
+            showTime: true,
+            checkForUpdates: true
         };
     }
 
@@ -93,5 +94,13 @@ class Settings {
 
     set disableAnimation(value) {
         this.settings.disableAnimation = value;
+    }
+
+    get checkForUpdates(){
+        return this.settings.checkForUpdates;
+    }
+
+    set checkForUpdates(value) {
+        this.settings.checkForUpdates = value;
     }
 }

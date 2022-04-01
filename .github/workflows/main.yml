@@ -8,6 +8,11 @@ on:
         require: true
         type: boolean
         default: false
+      deployment_dir:
+        description: 'Whats the name of the folder (e.g. 30_merge)'
+        require: true
+        type: string
+        default: ''
   push:
     branches:
       - main
@@ -40,6 +45,12 @@ jobs:
 # versions_path                       /versions       | /30_merge/versions
 # version                             main.xxxx       | 30_merge
 
+      - name: Resolve branch name (manual invocation override)
+        shell: bash
+        if: ${{ env.branch_name != 'main' && github.event.inputs.deployment_dir != '' }}
+        run: |
+          echo "branch_name=${{ github.event.inputs.deployment_dir }}" >> $GITHUB_ENV
+
       - name: Resolve deployment paths (main)
         shell: bash
         if: ${{ env.branch_name == 'main' }}
@@ -61,7 +72,7 @@ jobs:
           echo "deploy_dir_name=${{ env.branch_name }}" >> $GITHUB_ENV
           echo "deploy_dir_relative_regex_safe=\/${{ env.branch_name }}" >> $GITHUB_ENV
           echo "app_deploy_dir_relative_regex_safe=${{ env.branch_name }}\/app" >> $GITHUB_ENV
-          echo "purge_dir=/${{ env.deploy_dir_name }}/*" >> $GITHUB_ENV
+          echo "purge_dir=/${{ github.event.inputs.deployment_dir }}/*" >> $GITHUB_ENV
           echo "versions_path=/${{ env.branch_name }}/versions" >> $GITHUB_ENV
           echo "version=${{ env.branch_name }}" >> $GITHUB_ENV
 

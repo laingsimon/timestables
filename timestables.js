@@ -23,11 +23,14 @@ window.addEventListener("load", function(){
     let background = new Background(random);
     let sums = new Sums(settings, templates, title, results, random, background);
     let options = new OptionsDialog(settings, sums, title, screen);
+    let version = new Version(settings);
 
     options.updateTableChoserText();
     templates.addTimesTableNumbers();
     title.update();
     background.start(5000);
+    version.check();
+    version.configureCheckForUpdates(30); // check every 30 minutes (if enabled)
 
     options.showDialog();
 });
