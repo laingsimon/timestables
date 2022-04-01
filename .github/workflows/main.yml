@@ -33,7 +33,7 @@ jobs:
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "commit_date=$(git show --no-patch --no-notes --date=format:'%d-%b %Y %H:%M' --pretty='%cd' "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "branch_name=$(echo "$GITHUB_REF_NAME" | sed -r 's/\//_/g')" >> $GITHUB_ENV
-          echo "temp_version_path=$RUNNER_TEMP/versions" >> $GITHUB_ENV
+          echo "versions_to_keep=3" >> $GITHUB_ENV
 
 ## variables (main | other-branches)
 # deploy_dir_name                     ''              | 30_merge
@@ -108,14 +108,27 @@ jobs:
 # don't use the azure/CLI version here, it runs in a container which is cleared up after each step meaning the files can be accessed in the second step
         continue-on-error: true # the file may not exist, if it doesn't then the deployment can continue, a file with this version number alone will be created
         run: |
-          az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ env.temp_version_path }} --name ${{ env.versions_path }}
+          az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file $RUNNER_TEMP/versions --name ${{ env.versions_path }}
+      - name: Update versions
+# don't use azure/CLI here, it runs in a container so can't access the files from the first step
+        run: |
+          echo '${{ env.version }}' >> $RUNNER_TEMP/versions
+          tail $RUNNER_TEMP/versions -n ${{ env.versions_to_keep }} >> $RUNNER_TEMP/keep_versions
+          head $RUNNER_TEMP/versions -n -${{ env.versions_to_keep }} >> $RUNNER_TEMP/drop_versions
+          echo "Keep versions ${{ env.versions_to_keep }}:"
+          cat $RUNNER_TEMP/keep_versions
+          echo "Drop versions:"
+          cat $RUNNER_TEMP/drop_versions
       - name: Upload versions
 # don't use azure/CLI here, it runs in a container so can't access the files from the first step
         run: |
-          echo '${{ env.version }}' >> ${{ env.temp_version_path }}
-          cat ${{ env.temp_version_path }}
-          az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ env.temp_version_path }} --name ${{ env.versions_path }} --overwrite
-
+          az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file $RUNNER_TEMP/keep_versions --name ${{ env.versions_path }} --overwrite
+      - name: Delete old versions
+# don't use azure/CLI here, it runs in a container so can't access the files from the first step
+        run: |
+          echo "Should drop all but the last ${{ env.versions_to_keep }} versions"
+          cat $RUNNER_TEMP/drop_versions
+          cat $RUNNER_TEMP/drop_versions | while read dir; do echo "az storage blob directory delete --account-name 'timestablesapp' --auth-mode key -c '\$web' --recursive -d $dir"; done
 
       - name: Upload js
         uses: azure/CLI@v1
