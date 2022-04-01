@@ -37,7 +37,7 @@ class Version {
 
         let latestVersion = versions[versions.length - 1];
         let currentVersionUrl = document.location.href.toString();
-        let latestVersionUrl = `${this.baseUrl}/${latestVersion}/app/`;
+        let latestVersionUrl = `${this.baseUrl}/${latestVersion}/`;
         console.log(`Current version: ${currentVersionUrl}, latest version: ${latestVersionUrl}`);
 
         if (currentVersionUrl === latestVersionUrl) {
