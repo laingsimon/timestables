@@ -128,6 +128,7 @@ jobs:
         run: |
           echo "Should drop all but the last ${{ env.versions_to_keep }} versions"
           cat $RUNNER_TEMP/drop_versions
+          cat $RUNNER_TEMP/drop_versions | while read dir; do echo "az storage blob directory delete --account-name 'timestablesapp' --auth-mode key -c '\$web' --recursive -d $dir"; done
 
       - name: Upload js
         uses: azure/CLI@v1
