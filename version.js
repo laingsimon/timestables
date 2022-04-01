@@ -19,6 +19,28 @@ class Version {
     constructor(settings) {
         this.settings = settings;
         this.intervalHandle = null;
+
+        let newVersionPrompt = document.getElementsByClassName("new-version-prompt")[0];
+        let checkForUpdatesInput = newVersionPrompt.getElementsByClassName("check-for-updates")[0];
+        checkForUpdatesInput.checked = this.settings.checkForUpdates;
+        checkForUpdatesInput.addEventListener("click", this.checkForUpdatesChanged.bind(this));
+
+        let ignoreUpdateLink = newVersionPrompt.getElementsByClassName("ignore-update")[0];
+        ignoreUpdateLink.addEventListener("click", this.ignoreUpdate.bind(this));
+    }
+
+    ignoreUpdate() {
+        let newVersionPrompt = document.getElementsByClassName("new-version-prompt")[0];
+        newVersionPrompt.style.display = "none";
+    }
+
+    checkForUpdatesChanged(event) {
+        let input = event.target;
+        let shouldCheckForUpdates = input.checked;
+        this.settings.checkForUpdates = shouldCheckForUpdates;
+        this.settings.save();
+
+        this.configureCheckForUpdates();
     }
 
     check() {
@@ -44,13 +66,8 @@ class Version {
             return;
         }
 
-        if (confirm(`You're not running the latest version, would you like to use it?`)) {
-            document.location.href = this.baseUrl; /* let the root-site redirect redirect them to the latest version */
-        } else {
-            this.settings.checkForUpdates = confirm("Do you want to continue checking for updates");
-            this.settings.save();
-            this.configureCheckForUpdates();
-        }
+        let newVersionPrompt = document.getElementsByClassName("new-version-prompt")[0];
+        newVersionPrompt.style.display = "initial";
     }
 
     configureCheckForUpdates(checkFrequencyMinutes) {

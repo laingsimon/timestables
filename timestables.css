@@ -223,3 +223,22 @@ h3 label input {
     font-weight: initial;
     display: none;
 }
+
+.new-version-prompt {
+    display: block;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background: #ffffff;
+    padding: 2px;
+    z-index: 2;
+
+    font-size: 15px;
+}
+
+.new-version-prompt .ignore-update {
+    float: right;
+    cursor: pointer;
+    text-decoration: none;
+}
