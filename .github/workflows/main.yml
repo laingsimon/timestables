@@ -126,7 +126,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s './static_blobs'
+            az storage blob upload-batch --account-name "timestablesapp" --auth-mode key -d $deploy_dir -s './static_blobs' --overwrite
 
       - name: Purge deployment CDN cache
         uses: azure/CLI@v1
