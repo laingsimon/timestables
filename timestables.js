@@ -30,6 +30,7 @@ window.addEventListener("load", function(){
     title.update();
     background.start(5000);
     version.check();
+    version.configureCheckForUpdates(30); // check every 30 minutes (if enabled)
 
     options.showDialog();
 });

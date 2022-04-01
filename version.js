@@ -18,13 +18,14 @@ class Version {
 
     constructor(settings) {
         this.settings = settings;
+        this.intervalHandle = null;
     }
 
     check() {
         this.getText(`${this.baseUrl}/versions`, this.checkVersion.bind(this));
     }
 
-    checkVersion(url, text) {
+    checkVersion(_, text) {
         if (!text) {
             return;
         }
@@ -49,7 +50,33 @@ class Version {
 
         if (confirm(`You're not running the latest version, would you like to use it?`)) {
             document.location.href = this.baseUrl; /* let the root-site redirect redirect them to the latest version */
+        } else {
+            this.settings.checkForUpdates = confirm("Do you want to continue checking for updates");
+            this.settings.save();
+            this.configureCheckForUpdates();
         }
+    }
+
+    configureCheckForUpdates(checkFrequencyMinutes) {
+        this.checkFrequencyMinutes = checkFrequencyMinutes || this.checkFrequencyMinutes;
+        let checkForUpdates = this.shouldCheckForUpdates();
+
+        if (!checkForUpdates && this.intervalHandle != null) {
+            window.clearInterval(this.intervalHandle);
+            this.intervalHandle = null;
+            return;
+        }
+
+        if (this.intervalHandle == null && checkForUpdates) {
+            if (this.checkFrequencyMinutes) {
+                let minutes = 1000 * 60;
+                this.intervalHandle = window.setInterval(this.check.bind(this), minutes * this.checkFrequencyMinutes);
+            }
+        }
+    }
+
+    shouldCheckForUpdates() {
+        return this.settings.checkForUpdates !== false;
     }
 
     getText(url, callback) {
