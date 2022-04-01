@@ -97,13 +97,13 @@ jobs:
 #        uses: azure/CLI@v1
         continue-on-error: true
         run: |
-          az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file $temp_version_path --name $versions_path
+          az storage blob download --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ temp_version_path }} --name ${{ versions_path }}
       - name: Upload versions
 #        uses: azure/CLI@v1
         run: |
           echo '${{ env.version }}' >> ${{ env.temp_version_path }}
-          Get-Content -Path $temp_version_path
-          az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file $temp_version_path --name $versions_path
+          Get-Content -Path ${{ temp_version_path }}
+          az storage blob upload --account-name "timestablesapp" --auth-mode key -c '$web' --file ${{ temp_version_path }} --name ${{ versions_path }}
 
 
       - name: Upload js
