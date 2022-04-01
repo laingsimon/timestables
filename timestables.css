@@ -225,7 +225,7 @@ h3 label input {
 }
 
 .new-version-prompt {
-    display: block;
+    display: none;
     position: fixed;
     bottom: 0px;
     left: 0px;
