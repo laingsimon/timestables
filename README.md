@@ -1,4 +1,4 @@
-# [Times tables](https://app.timestables.xyz)
+# [Times tables](https://timestablesapp.azureedge.net)
 
 I have a young family and one of the week-on-week homework tasks is times tables. Our school has a subscription to an app which can run on a modern tablet or phone. Which is great, but with all the high end graphics it doesn't perform so well as the device matures.
 
@@ -24,7 +24,7 @@ The product is licensed under the Apache 2. There should be no copying of this s
 ### Light weight, and survive the test of time
 I want this service to support people now. Next year, next decade, if anyone sees the use for it. I've made an assumption that the technology of the future will not look too different from what we have today, i.e. handheld tech will still be a thing and that tech will support a web page.
 
-That's it. If you can [open a web page](https://app.timestables.xyz), you can use the app. No installation required. No high end device requirements and no space requirements. As such, there can be one version to work in iOS, Android, Windows and anywhere else you can think of.
+That's it. If you can [open a web page](https://timestablesapp.azureedge.net), you can use the app. No installation required. No high end device requirements and no space requirements. As such, there can be one version to work in iOS, Android, Windows and anywhere else you can think of.
 
 ### Safe and secure for use by young children
 Finally. But probably the most important. Children will be in front of the service, as such everything must be secure, safe and appropriate. No personal data should be requested, stored on the browser and certainly not transmitted over the internet.
